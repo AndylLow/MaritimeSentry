@@ -1,0 +1,439 @@
+/* THESIS WOW EFFECTS - Advanced CSS for Academic Presentation */
+/* Exceptional UI to impress thesis advisors */
+
+/* 3D Card Transform Effects */
+.card-3d {
+    perspective: 1000px;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.card-3d .card {
+    transform-style: preserve-3d;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+    position: relative;
+}
+
+.card-3d:hover .card {
+    transform: rotateY(10deg) rotateX(5deg) translateZ(20px);
+    box-shadow: 
+        0 30px 60px rgba(0, 0, 0, 0.2),
+        0 15px 30px rgba(13, 115, 119, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Holographic Interface Effect */
+.holographic {
+    position: relative;
+    background: linear-gradient(135deg, rgba(13, 115, 119, 0.1) 0%, rgba(20, 160, 133, 0.1) 100%);
+    border: 1px solid rgba(13, 115, 119, 0.3);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.holographic::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(13, 115, 119, 0.3),
+        rgba(20, 160, 133, 0.4),
+        rgba(13, 115, 119, 0.3),
+        transparent
+    );
+    animation: holographicScan 3s ease-in-out infinite;
+}
+
+.holographic::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(13, 115, 119, 0.03) 2px,
+        rgba(13, 115, 119, 0.03) 4px
+    );
+    pointer-events: none;
+}
+
+@keyframes holographicScan {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    51% { left: 100%; }
+    100% { left: 100%; }
+}
+
+/* Matrix Rain Effect for Background */
+.matrix-rain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -2;
+    opacity: 0.05;
+}
+
+.matrix-char {
+    position: absolute;
+    color: #0d7377;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    animation: matrixFall linear infinite;
+}
+
+@keyframes matrixFall {
+    0% { transform: translateY(-100vh); opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* Neural Network Visualization */
+.neural-network {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.neural-node {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, #0d7377 0%, rgba(13, 115, 119, 0.3) 100%);
+    border-radius: 50%;
+    animation: neuralPulse 2s ease-in-out infinite;
+}
+
+.neural-connection {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(13, 115, 119, 0.4), transparent);
+    animation: neuralFlow 3s ease-in-out infinite;
+}
+
+@keyframes neuralPulse {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.5); opacity: 1; }
+}
+
+@keyframes neuralFlow {
+    0% { transform: scaleX(0); opacity: 0; }
+    50% { transform: scaleX(1); opacity: 1; }
+    100% { transform: scaleX(0); opacity: 0; }
+}
+
+/* Advanced Data Visualization Effects */
+.data-stream {
+    position: relative;
+    overflow: hidden;
+    background: rgba(44, 62, 80, 0.95);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.data-stream::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #0d7377, #14a085, #0d7377);
+    background-size: 200% 100%;
+    animation: dataFlow 2s linear infinite;
+}
+
+.data-stream .data-point {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #0d7377;
+    border-radius: 50%;
+    margin: 0 2px;
+    animation: dataPointGlow 1.5s ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+}
+
+@keyframes dataFlow {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+@keyframes dataPointGlow {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* Quantum Loading Effect */
+.quantum-loader {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+}
+
+.quantum-particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #0d7377;
+    border-radius: 50%;
+    animation: quantumOrbit 2s linear infinite;
+}
+
+.quantum-particle:nth-child(1) { animation-delay: 0s; }
+.quantum-particle:nth-child(2) { animation-delay: 0.5s; }
+.quantum-particle:nth-child(3) { animation-delay: 1s; }
+.quantum-particle:nth-child(4) { animation-delay: 1.5s; }
+
+@keyframes quantumOrbit {
+    0% { 
+        transform: rotate(0deg) translateX(25px) rotate(0deg);
+        opacity: 1;
+    }
+    25% { 
+        transform: rotate(90deg) translateX(25px) rotate(-90deg);
+        opacity: 0.7;
+    }
+    50% { 
+        transform: rotate(180deg) translateX(25px) rotate(-180deg);
+        opacity: 0.3;
+    }
+    75% { 
+        transform: rotate(270deg) translateX(25px) rotate(-270deg);
+        opacity: 0.7;
+    }
+    100% { 
+        transform: rotate(360deg) translateX(25px) rotate(-360deg);
+        opacity: 1;
+    }
+}
+
+/* Geometric Pattern Overlays */
+.geometric-pattern {
+    position: relative;
+    overflow: hidden;
+}
+
+.geometric-pattern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(13, 115, 119, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(20, 160, 133, 0.1) 0%, transparent 50%);
+    animation: geometricShift 8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes geometricShift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(10px, -10px) scale(1.05); }
+    66% { transform: translate(-10px, 10px) scale(0.95); }
+}
+
+/* Advanced Hover States */
+.advanced-hover {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.advanced-hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 1;
+}
+
+.advanced-hover:hover::before {
+    width: 100%;
+    left: 100%;
+}
+
+.advanced-hover:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.15),
+        0 10px 20px rgba(13, 115, 119, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Particle System for Interactions */
+.particle-explosion {
+    position: absolute;
+    pointer-events: none;
+}
+
+.explosion-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #0d7377;
+    border-radius: 50%;
+    animation: explode 0.8s ease-out forwards;
+}
+
+@keyframes explode {
+    0% {
+        transform: scale(1) translate(0, 0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0) translate(var(--dx, 0), var(--dy, 0));
+        opacity: 0;
+    }
+}
+
+/* Futuristic Grid Lines */
+.futuristic-grid {
+    position: relative;
+    background-image: 
+        linear-gradient(rgba(13, 115, 119, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(13, 115, 119, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    animation: gridPulse 4s ease-in-out infinite;
+}
+
+@keyframes gridPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+/* Neon Glow Text Effect */
+.neon-text {
+    color: #0d7377;
+    text-shadow: 
+        0 0 5px currentColor,
+        0 0 10px currentColor,
+        0 0 15px currentColor,
+        0 0 20px currentColor;
+    animation: neonFlicker 2s ease-in-out infinite alternate;
+}
+
+@keyframes neonFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+/* Morphing Shapes */
+.morphing-shape {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(45deg, #0d7377, #14a085);
+    border-radius: 50%;
+    animation: morphShape 6s ease-in-out infinite;
+    margin: 2rem auto;
+}
+
+@keyframes morphShape {
+    0%, 100% { 
+        border-radius: 50%;
+        transform: rotate(0deg) scale(1);
+    }
+    25% { 
+        border-radius: 25% 75% 75% 25%;
+        transform: rotate(90deg) scale(1.1);
+    }
+    50% { 
+        border-radius: 25%;
+        transform: rotate(180deg) scale(0.9);
+    }
+    75% { 
+        border-radius: 75% 25% 25% 75%;
+        transform: rotate(270deg) scale(1.1);
+    }
+}
+
+/* Enhanced Glassmorphism */
+.glass-ultra {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(30px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-ultra::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: glassShine 3s ease-in-out infinite;
+}
+
+@keyframes glassShine {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+    .card-3d:hover .card {
+        transform: rotateY(5deg) rotateX(2deg) translateZ(10px);
+    }
+    
+    .morphing-shape {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .quantum-loader {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Performance Optimizations */
+.gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* High contrast accessibility */
+@media (prefers-contrast: high) {
+    .holographic,
+    .neural-node,
+    .data-point {
+        filter: contrast(150%);
+    }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .holographic::before,
+    .neural-node,
+    .morphing-shape,
+    .quantum-particle {
+        animation: none;
+    }
+}

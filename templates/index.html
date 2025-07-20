@@ -9,7 +9,7 @@
         <div class="row align-items-center min-vh-75">
             <div class="col-lg-6">
                 <div class="hero-content">
-                    <h1 class="display-4 fw-bold mb-4 fade-in">
+                    <h1 class="display-4 fw-bold mb-4 fade-in display-title" data-typewriter data-speed="60">
                         Advanced Ship Detection
                         <span class="text-light">in the Bosphorus</span>
                     </h1>
@@ -18,7 +18,7 @@
                         detection and analysis in Istanbul's strategic waterway.
                     </p>
                     <div class="d-flex gap-3 mb-4 fade-in-delay-2">
-                        <a href="{{ url_for('upload_page') }}" class="btn btn-ocean btn-lg">
+                        <a href="{{ url_for('upload_page') }}" class="btn btn-ocean btn-lg pulse-glow">
                             <i class="fas fa-upload me-2"></i>Start Detection
                         </a>
                         <a href="{{ url_for('about') }}" class="btn btn-outline-light btn-lg">
@@ -33,21 +33,21 @@
                         <i class="fas fa-ship display-1 text-ocean mb-3"></i>
                         <div class="stats-grid">
                             {% if stats %}
-                            <div class="stat-card">
-                                <div class="stat-number">{{ stats.total_ships_detected or 0 }}</div>
+                            <div class="stat-card interactive-hover">
+                                <div class="stat-number" data-count="{{ stats.total_ships_detected or 0 }}">{{ stats.total_ships_detected or 0 }}</div>
                                 <div class="stat-label">Ships Detected</div>
                             </div>
-                            <div class="stat-card">
-                                <div class="stat-number">{{ stats.total_images_processed or 0 }}</div>
+                            <div class="stat-card interactive-hover">
+                                <div class="stat-number" data-count="{{ stats.total_images_processed or 0 }}">{{ stats.total_images_processed or 0 }}</div>
                                 <div class="stat-label">Images Processed</div>
                             </div>
                             {% else %}
-                            <div class="stat-card">
-                                <div class="stat-number">0</div>
+                            <div class="stat-card interactive-hover">
+                                <div class="stat-number" data-count="0">0</div>
                                 <div class="stat-label">Ships Detected</div>
                             </div>
-                            <div class="stat-card">
-                                <div class="stat-number">0</div>
+                            <div class="stat-card interactive-hover">
+                                <div class="stat-number" data-count="0">0</div>
                                 <div class="stat-label">Images Processed</div>
                             </div>
                             {% endif %}
