@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Upload - Bosphorus Ship Detection System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-6 fw-bold text-navy">
+                    <i class="fas fa-upload me-3 text-ocean"></i>
+                    Upload & Detect
+                </h1>
+                <p class="lead text-muted">
+                    Upload your images or videos to detect ships using advanced YOLO technology
+                </p>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+                        <!-- Upload Zone -->
+                        <div id="uploadZone" class="upload-zone mb-4">
+                            <div class="upload-content text-center">
+                                <i class="fas fa-cloud-upload-alt display-4 text-ocean mb-3"></i>
+                                <h4 class="fw-bold mb-3">Drag & Drop Your Files Here</h4>
+                                <p class="text-muted mb-4">
+                                    Or click to browse and select files from your device
+                                </p>
+                                
+                                <!-- File Input -->
+                                <input type="file" name="file" id="fileInput" class="d-none" 
+                                       accept="image/*,video/*" required>
+                                
+                                <button type="button" class="btn btn-ocean btn-lg" onclick="document.getElementById('fileInput').click()">
+                                    <i class="fas fa-folder-open me-2"></i>Browse Files
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- File Preview -->
+                        <div id="filePreview" class="file-preview d-none mb-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            <i class="fas fa-file-image text-ocean fs-3"></i>
+                                        </div>
+                                        <div class="col">
+                                            <h6 class="mb-1 file-name"></h6>
+                                            <small class="text-muted file-size"></small>
+                                        </div>
+                                        <div class="col-auto">
+                                            <button type="button" class="btn btn-outline-danger btn-sm" id="removeFile">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upload Options -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-sliders-h me-2 text-ocean"></i>Detection Confidence
+                                </label>
+                                <input type="range" class="form-range" id="confidenceRange" 
+                                       min="0.1" max="0.9" step="0.1" value="0.3">
+                                <small class="text-muted">
+                                    Minimum confidence: <span id="confidenceValue">30%</span>
+                                </small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-palette me-2 text-ocean"></i>Annotation Style
+                                </label>
+                                <select class="form-select" id="annotationStyle">
+                                    <option value="default">Default Boxes</option>
+                                    <option value="minimal">Minimal Labels</option>
+                                    <option value="detailed">Detailed Information</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-ocean btn-lg" id="submitBtn">
+                                <i class="fas fa-magic me-2"></i>
+                                Start Detection
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Processing Modal -->
+            <div class="modal fade" id="processingModal" tabindex="-1" data-bs-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body text-center py-5">
+                            <div class="processing-animation mb-4">
+                                <div class="spinner-border text-ocean" style="width: 3rem; height: 3rem;" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <h5 class="fw-bold mb-3">Processing Your Image</h5>
+                            <p class="text-muted mb-4">
+                                Our YOLO model is analyzing your image for ship detection...
+                            </p>
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-ocean progress-bar-animated progress-bar-striped" 
+                                     role="progressbar" style="width: 100%"></div>
+                            </div>
+                            <small class="text-muted">This may take a few moments depending on image size</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Requirements -->
+            <div class="row mt-5">
+                <div class="col-lg-6">
+                    <div class="info-card">
+                        <h6 class="fw-bold text-ocean mb-3">
+                            <i class="fas fa-info-circle me-2"></i>Supported Formats
+                        </h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Images: JPG, PNG, JPEG, WEBP, GIF</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Videos: MP4, AVI, MOV, MKV</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Maximum size: 100MB</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="info-card">
+                        <h6 class="fw-bold text-ocean mb-3">
+                            <i class="fas fa-lightbulb me-2"></i>Best Practices
+                        </h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>High resolution images work best</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Clear daylight conditions preferred</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Maritime scenes with visible vessels</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sample Gallery -->
+            <div class="mt-5">
+                <h5 class="fw-bold text-navy mb-4">
+                    <i class="fas fa-images me-2 text-ocean"></i>Sample Detection Results
+                </h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="sample-card">
+                            <div class="sample-placeholder">
+                                <i class="fas fa-ship display-6 text-ocean"></i>
+                                <div class="mt-2">
+                                    <small class="badge bg-success">3 Ships Detected</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="sample-card">
+                            <div class="sample-placeholder">
+                                <i class="fas fa-anchor display-6 text-ocean"></i>
+                                <div class="mt-2">
+                                    <small class="badge bg-success">1 Vessel Detected</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="sample-card">
+                            <div class="sample-placeholder">
+                                <i class="fas fa-sailboat display-6 text-ocean"></i>
+                                <div class="mt-2">
+                                    <small class="badge bg-success">2 Boats Detected</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initUpload();
+    
+    // Confidence slider
+    const confidenceRange = document.getElementById('confidenceRange');
+    const confidenceValue = document.getElementById('confidenceValue');
+    
+    confidenceRange.addEventListener('input', function() {
+        confidenceValue.textContent = (this.value * 100) + '%';
+    });
+    
+    // Form submission with processing modal
+    document.getElementById('uploadForm').addEventListener('submit', function() {
+        const modal = new bootstrap.Modal(document.getElementById('processingModal'));
+        modal.show();
+    });
+});
+</script>
+{% endblock %}

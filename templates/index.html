@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Bosphorus Ship Detection System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-gradient-ocean text-white">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold mb-4 fade-in">
+                        Advanced Ship Detection
+                        <span class="text-ocean">in the Bosphorus</span>
+                    </h1>
+                    <p class="lead mb-4 fade-in-delay">
+                        State-of-the-art YOLO-based computer vision system for real-time maritime vessel 
+                        detection and analysis in Istanbul's strategic waterway.
+                    </p>
+                    <div class="d-flex gap-3 mb-4 fade-in-delay-2">
+                        <a href="{{ url_for('upload_page') }}" class="btn btn-ocean btn-lg">
+                            <i class="fas fa-upload me-2"></i>Start Detection
+                        </a>
+                        <a href="{{ url_for('about') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-info-circle me-2"></i>Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual text-center fade-in-delay-3">
+                    <div class="detection-preview">
+                        <i class="fas fa-ship display-1 text-ocean mb-3"></i>
+                        <div class="stats-grid">
+                            {% if stats %}
+                            <div class="stat-card">
+                                <div class="stat-number">{{ stats.total_ships_detected or 0 }}</div>
+                                <div class="stat-label">Ships Detected</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">{{ stats.total_images_processed or 0 }}</div>
+                                <div class="stat-label">Images Processed</div>
+                            </div>
+                            {% else %}
+                            <div class="stat-card">
+                                <div class="stat-number">0</div>
+                                <div class="stat-label">Ships Detected</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">0</div>
+                                <div class="stat-label">Images Processed</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Upload Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg border-0 upload-quick-card">
+                    <div class="card-body p-4">
+                        <h3 class="text-center mb-4">
+                            <i class="fas fa-cloud-upload-alt text-ocean me-2"></i>
+                            Quick Upload & Detection
+                        </h3>
+                        <div id="quickUploadZone" class="upload-zone text-center p-4 mb-3">
+                            <i class="fas fa-image display-6 text-muted mb-3"></i>
+                            <h5 class="text-muted mb-2">Drag & Drop Your Image Here</h5>
+                            <p class="text-muted mb-3">or</p>
+                            <button class="btn btn-outline-ocean">
+                                <i class="fas fa-folder-open me-2"></i>Browse Files
+                            </button>
+                            <input type="file" id="quickFileInput" class="d-none" accept="image/*">
+                        </div>
+                        <div class="text-center">
+                            <small class="text-muted">
+                                Supported formats: JPG, PNG, JPEG, WEBP (Max: 100MB)
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="fw-bold">Advanced Detection Capabilities</h2>
+                <p class="lead text-muted">Powered by cutting-edge YOLO deep learning technology</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-eye text-ocean"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Real-time Detection</h5>
+                    <p class="text-muted">Advanced YOLO model provides fast and accurate ship detection in maritime environments.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-bullseye text-ocean"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">High Accuracy</h5>
+                    <p class="text-muted">Precise bounding box detection with confidence scores for reliable results.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-chart-bar text-ocean"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Analytics Dashboard</h5>
+                    <p class="text-muted">Comprehensive statistics and visualizations for detection performance analysis.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card text-center h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-download text-ocean"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Export Results</h5>
+                    <p class="text-muted">Download annotated images and detailed reports for further analysis and presentation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Results Section -->
+{% if recent_jobs %}
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h3 class="fw-bold mb-4">
+                    <i class="fas fa-history me-2 text-ocean"></i>Recent Detections
+                </h3>
+            </div>
+        </div>
+        <div class="row g-4">
+            {% for job in recent_jobs %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 result-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h6 class="card-title mb-0 text-truncate">{{ job.original_filename }}</h6>
+                            <span class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>Complete
+                            </span>
+                        </div>
+                        <div class="row text-center mb-3">
+                            <div class="col-6">
+                                <div class="result-stat">
+                                    <div class="stat-number text-ocean">{{ job.ship_count or 0 }}</div>
+                                    <small class="text-muted">Ships</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="result-stat">
+                                    <div class="stat-number text-ocean">
+                                        {% if job.confidence_scores %}
+                                            {{ "%.1f"|format(job.confidence_scores|sum / job.confidence_scores|length * 100) }}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted">Avg Confidence</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <a href="{{ url_for('results', job_id=job.id) }}" class="btn btn-outline-ocean btn-sm">
+                                <i class="fas fa-eye me-1"></i>View Results
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-5 bg-gradient-ocean text-white">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4">Ready to Detect Ships in the Bosphorus?</h2>
+        <p class="lead mb-4">Upload your images and experience the power of AI-driven maritime surveillance</p>
+        <a href="{{ url_for('upload_page') }}" class="btn btn-light btn-lg">
+            <i class="fas fa-upload me-2"></i>Start Detection Now
+        </a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+<script>
+    // Initialize quick upload functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        initQuickUpload();
+        animateCounters();
+    });
+    
+    function animateCounters() {
+        const counters = document.querySelectorAll('.stat-number');
+        counters.forEach(counter => {
+            const target = parseInt(counter.textContent);
+            let current = 0;
+            const increment = target / 30;
+            
+            const updateCounter = () => {
+                if (current < target) {
+                    current += increment;
+                    counter.textContent = Math.ceil(current);
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    counter.textContent = target;
+                }
+            };
+            
+            // Start animation when element is visible
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        updateCounter();
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+            
+            observer.observe(counter);
+        });
+    }
+</script>
+{% endblock %}

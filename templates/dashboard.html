@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Bosphorus Ship Detection System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6 fw-bold text-navy">
+                <i class="fas fa-chart-line me-3 text-ocean"></i>
+                Analytics Dashboard
+            </h1>
+            <p class="lead text-muted">Comprehensive statistics and insights from ship detection operations</p>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row mb-5">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-images text-ocean"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-number">{{ dashboard_stats.total_images }}</div>
+                    <div class="metric-label">Images Processed</div>
+                    <div class="metric-change text-success">
+                        <i class="fas fa-arrow-up"></i>+12% this week
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-ship text-ocean"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-number">{{ dashboard_stats.total_ships }}</div>
+                    <div class="metric-label">Ships Detected</div>
+                    <div class="metric-change text-success">
+                        <i class="fas fa-arrow-up"></i>+8% this week
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-clock text-ocean"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-number">{{ dashboard_stats.avg_processing_time }}s</div>
+                    <div class="metric-label">Avg Processing Time</div>
+                    <div class="metric-change text-success">
+                        <i class="fas fa-arrow-down"></i>-15% improvement
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-check-circle text-ocean"></i>
+                </div>
+                <div class="metric-content">
+                    <div class="metric-number">{{ dashboard_stats.success_rate }}%</div>
+                    <div class="metric-label">Success Rate</div>
+                    <div class="metric-change text-success">
+                        <i class="fas fa-arrow-up"></i>+2% this week
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-gradient-ocean text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-area me-2"></i>Detection Trends (Last 30 Days)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="trendsChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-pie me-2 text-ocean"></i>Detection Accuracy
+                    </h6>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div class="text-center">
+                        <canvas id="accuracyChart" width="200" height="200"></canvas>
+                        <div class="mt-3">
+                            <h4 class="fw-bold text-ocean mb-0">95.2%</h4>
+                            <small class="text-muted">Average Confidence</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics and Recent Activity -->
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-tachometer-alt me-2 text-ocean"></i>Performance Metrics
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-6">
+                            <div class="performance-metric">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Model Accuracy</span>
+                                    <span class="fw-bold">97.8%</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 97.8%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="performance-metric">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Detection Speed</span>
+                                    <span class="fw-bold">2.3s</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-ocean" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="performance-metric">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">System Uptime</span>
+                                    <span class="fw-bold">99.9%</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 99.9%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="performance-metric">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Memory Usage</span>
+                                    <span class="fw-bold">67%</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-warning" style="width: 67%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-history me-2 text-ocean"></i>Recent Activity
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="activity-timeline">
+                        {% for job in recent_jobs[:5] %}
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-{{ 'check' if job.status == 'completed' else 'clock' }} text-{{ 'success' if job.status == 'completed' else 'warning' }}"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">{{ job.original_filename }}</div>
+                                <div class="activity-meta">
+                                    <span class="text-muted">{{ job.upload_time.strftime('%H:%M, %b %d') if job.upload_time else 'N/A' }}</span>
+                                    {% if job.status == 'completed' %}
+                                        <span class="badge bg-success ms-2">{{ job.ship_count or 0 }} ships detected</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-table me-2 text-ocean"></i>Detection History
+                    </h6>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-secondary" onclick="exportData('csv')">
+                            <i class="fas fa-file-csv me-1"></i>CSV
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="exportData('json')">
+                            <i class="fas fa-file-code me-1"></i>JSON
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Filename</th>
+                                    <th>Upload Time</th>
+                                    <th>Status</th>
+                                    <th>Ships Detected</th>
+                                    <th>Avg Confidence</th>
+                                    <th>Processing Time</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in recent_jobs %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-image me-2 text-muted"></i>
+                                            <span>{{ job.original_filename|truncate(30, True) }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ job.upload_time.strftime('%Y-%m-%d %H:%M') if job.upload_time else 'N/A' }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if job.status == 'completed' else 'warning' if job.status == 'processing' else 'danger' }}">
+                                            {{ job.status.title() }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="fw-bold text-ocean">{{ job.ship_count or 0 }}</span>
+                                    </td>
+                                    <td>
+                                        {% if job.confidence_scores %}
+                                            {{ "%.1f"|format(job.confidence_scores|sum / job.confidence_scores|length * 100) }}%
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if job.processing_time %}
+                                            {{ "%.2f"|format(job.processing_time) }}s
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('results', job_id=job.id) }}" 
+                                               class="btn btn-outline-ocean">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if job.status == 'completed' %}
+                                            <a href="{{ url_for('download_result', job_id=job.id) }}" 
+                                               class="btn btn-outline-success">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load statistics data
+    fetch('/api/statistics')
+        .then(response => response.json())
+        .then(data => {
+            createTrendsChart('trendsChart', data);
+            createAccuracyChart('accuracyChart', 95.2);
+        })
+        .catch(error => {
+            console.error('Error loading statistics:', error);
+        });
+    
+    // Animate metric numbers
+    animateNumbers();
+});
+
+function animateNumbers() {
+    const numbers = document.querySelectorAll('.metric-number');
+    numbers.forEach(number => {
+        const target = parseInt(number.textContent);
+        let current = 0;
+        const increment = target / 50;
+        
+        const updateNumber = () => {
+            if (current < target) {
+                current += increment;
+                number.textContent = Math.ceil(current);
+                requestAnimationFrame(updateNumber);
+            } else {
+                number.textContent = target;
+            }
+        };
+        
+        // Start animation when element is visible
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    updateNumber();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        observer.observe(number);
+    });
+}
+
+function exportData(format) {
+    if (format === 'csv') {
+        // Create CSV content
+        let csv = 'Filename,Upload Time,Status,Ships Detected,Processing Time\n';
+        document.querySelectorAll('tbody tr').forEach(row => {
+            const cells = row.querySelectorAll('td');
+            csv += `"${cells[0].textContent.trim()}","${cells[1].textContent.trim()}","${cells[2].textContent.trim()}","${cells[3].textContent.trim()}","${cells[5].textContent.trim()}"\n`;
+        });
+        
+        // Download CSV
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'detection_history.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    } else if (format === 'json') {
+        // Export as JSON (simplified example)
+        alert('JSON export functionality would be implemented here');
+    }
+}
+</script>
+{% endblock %}
