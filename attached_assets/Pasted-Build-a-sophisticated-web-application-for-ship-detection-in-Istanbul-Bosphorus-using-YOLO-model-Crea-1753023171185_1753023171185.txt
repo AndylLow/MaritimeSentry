@@ -1,0 +1,25 @@
+Build a sophisticated web application for ship detection in Istanbul Bosphorus using YOLO model Create a modern, professional web application with the following specifications: Core Functionality:
+
+Flask backend with file upload capabilities for images/videos Integration with YOLO model for real-time ship detection Display detection results with bounding boxes and confidence scores Support for both single image processing and batch processing Real-time statistics dashboard showing detection counts and vessel types
+
+Design Requirements:
+
+Clean, modern UI with a maritime/nautical theme Professional color scheme (navy blue, ocean teal, white accents) Responsive design that works on desktop and mobile Interactive elements with smooth animations and transitions Loading indicators during processing Results visualization with overlay annotations
+
+Key Pages/Sections:
+
+Landing Page: Hero section with project title, brief description, and upload interface Upload Interface: Drag-and-drop file upload with preview Processing View: Real-time processing status with progress indicators Results Dashboard: Detection results with annotated images, statistics, and downloadable reports About Section: Technical details about YOLO implementation and thesis context
+
+Technical Features:
+
+Secure file handling and validation Progress tracking for long-running detections Result caching for faster re-processing Export functionality for detection reports Integration with Firebase for data storage and hosting
+
+Visual Enhancements:
+
+Interactive charts showing detection analytics Before/after image comparisons Animated counters for statistics Professional typography and spacing Subtle gradients and shadows for depth Hover effects and micro-interactions
+
+Academic Presentation Features:
+
+Professional header with thesis title and student information Technical specifications panel Model performance metrics display Sample detection gallery Export options for presentation materials
+
+Make the interface look polished and production-ready to impress thesis advisors, with attention to both functionality and aesthetic appeal. Include proper error handling, loading states, and user feedback throughout the application.
