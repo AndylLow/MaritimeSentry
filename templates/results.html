@@ -314,7 +314,7 @@
 <script>
 // Initialize confidence distribution chart
 document.addEventListener('DOMContentLoaded', function() {
-    const confidenceData = {{ job.confidence_scores | tojsonfilter }};
+    const confidenceData = {{ job.confidence_scores | tojson }};
     
     // Create confidence histogram
     const confidenceCtx = document.getElementById('confidenceChart');
@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     {% if job.vessel_types %}
     // Create vessel type distribution chart
-    const vesselTypes = {{ job.vessel_types | tojsonfilter }};
+    const vesselTypes = {{ job.vessel_types | tojson }};
     const vesselTypeCtx = document.getElementById('vesselTypeChart');
     if (vesselTypeCtx && vesselTypes) {
         createVesselTypeChart('vesselTypeChart', vesselTypes);
