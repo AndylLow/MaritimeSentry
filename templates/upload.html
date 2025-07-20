@@ -206,10 +206,68 @@ document.addEventListener('DOMContentLoaded', function() {
         confidenceValue.textContent = (this.value * 100) + '%';
     });
     
-    // Form submission with processing modal
-    document.getElementById('uploadForm').addEventListener('submit', function() {
-        const modal = new bootstrap.Modal(document.getElementById('processingModal'));
-        modal.show();
+    // Enhanced form submission with maritime loading
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const file = formData.get('file');
+        
+        if (!file) {
+            alert('Please select a file to upload');
+            return;
+        }
+        
+        // Show maritime YOLO loading animation
+        const loader = MaritimeLoader.showYoloLoading(
+            'Processing Your Image',
+            'Running advanced YOLO ship detection on your Bosphorus image...'
+        );
+        
+        // Submit form with XMLHttpRequest for better control
+        const xhr = new XMLHttpRequest();
+        
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const percentComplete = (e.loaded / e.total) * 60; // Upload is 60% of process
+                const progressBar = document.querySelector('.progress-wave');
+                if (progressBar) {
+                    progressBar.style.setProperty('--progress', `${percentComplete}%`);
+                }
+            }
+        });
+        
+        xhr.addEventListener('load', function() {
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.redirect) {
+                        // Complete the animation then redirect
+                        loader.complete();
+                        setTimeout(() => {
+                            window.location.href = response.redirect;
+                        }, 1200);
+                    } else if (response.error) {
+                        loader.hide();
+                        alert(response.error);
+                    }
+                } catch (e) {
+                    loader.hide();
+                    alert('Unexpected response from server');
+                }
+            } else {
+                loader.hide();
+                alert('Upload failed. Please try again.');
+            }
+        });
+        
+        xhr.addEventListener('error', function() {
+            loader.hide();
+            alert('Network error. Please check your connection and try again.');
+        });
+        
+        xhr.open('POST', this.action);
+        xhr.send(formData);
     });
 });
 </script>

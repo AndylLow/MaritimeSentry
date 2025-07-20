@@ -16,6 +16,7 @@
     
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/loading-animations.css') }}" rel="stylesheet">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232c3e50'><path d='M3 13h8V3H9v6H3v4zm6 8h2V11h-2v10zm4-18v6h8V3h-8zm8 8h-6v10h2v-6h4v-4z'/></svg>">
@@ -120,6 +121,7 @@
     
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/maritime-loading.js') }}"></script>
     
     {% block extra_scripts %}{% endblock %}
 </body>

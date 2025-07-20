@@ -1,0 +1,419 @@
+/* Maritime-themed Loading Animations */
+/* Bosphorus Ship Detection System */
+
+/* Ship Wave Loading Animation */
+.ship-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    position: relative;
+}
+
+.ship-container {
+    position: relative;
+    width: 120px;
+    height: 80px;
+    margin-bottom: 30px;
+}
+
+.ship {
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    background: linear-gradient(45deg, #0a4d52, #0d7377);
+    border-radius: 0 15px 15px 0;
+    top: 25px;
+    left: 30px;
+    animation: shipFloat 3s ease-in-out infinite;
+    box-shadow: 0 2px 8px rgba(10, 77, 82, 0.3);
+}
+
+.ship::before {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 25px;
+    background: #2c3e50;
+    top: -25px;
+    left: 20px;
+    border-radius: 2px;
+}
+
+.ship::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 8px;
+    background: #e74c3c;
+    top: -15px;
+    left: 15px;
+    border-radius: 2px;
+}
+
+.waves {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: linear-gradient(90deg, transparent, rgba(13, 115, 119, 0.3), transparent);
+    border-radius: 50%;
+    animation: waveMotion 2s ease-in-out infinite;
+}
+
+.waves::before,
+.waves::after {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 4px;
+    background: rgba(13, 115, 119, 0.4);
+    border-radius: 50%;
+    animation: ripple 3s ease-in-out infinite;
+}
+
+.waves::before {
+    left: -10px;
+    animation-delay: -1s;
+}
+
+.waves::after {
+    right: -10px;
+    animation-delay: -2s;
+}
+
+@keyframes shipFloat {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+@keyframes waveMotion {
+    0%, 100% { transform: scaleX(1) translateY(0); }
+    50% { transform: scaleX(1.1) translateY(-2px); }
+}
+
+@keyframes ripple {
+    0% { 
+        transform: scale(0.8); 
+        opacity: 0.7; 
+    }
+    50% { 
+        transform: scale(1.2); 
+        opacity: 0.3; 
+    }
+    100% { 
+        transform: scale(1.6); 
+        opacity: 0; 
+    }
+}
+
+/* Radar Scanning Animation */
+.radar-loading {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 30px;
+}
+
+.radar-circle {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(10, 77, 82, 0.2);
+    border-radius: 50%;
+    top: 0;
+    left: 0;
+}
+
+.radar-circle:nth-child(2) {
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+}
+
+.radar-circle:nth-child(3) {
+    width: 60%;
+    height: 60%;
+    top: 20%;
+    left: 20%;
+}
+
+.radar-sweep {
+    position: absolute;
+    width: 50%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #0d7377, transparent);
+    top: 50%;
+    left: 50%;
+    transform-origin: 0 center;
+    animation: radarSweep 2s linear infinite;
+}
+
+.radar-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #0d7377;
+    border-radius: 50%;
+    animation: radarPulse 1s ease-in-out infinite;
+}
+
+.radar-dot:nth-child(5) {
+    top: 25%;
+    right: 30%;
+    animation-delay: 0.2s;
+}
+
+.radar-dot:nth-child(6) {
+    bottom: 35%;
+    left: 20%;
+    animation-delay: 0.8s;
+}
+
+.radar-dot:nth-child(7) {
+    top: 60%;
+    right: 20%;
+    animation-delay: 1.4s;
+}
+
+@keyframes radarSweep {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes radarPulse {
+    0%, 100% { 
+        opacity: 0.3; 
+        transform: scale(1); 
+    }
+    50% { 
+        opacity: 1; 
+        transform: scale(1.5); 
+    }
+}
+
+/* YOLO Processing Animation */
+.yolo-processing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.detection-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 120px;
+    height: 120px;
+}
+
+.grid-cell {
+    background: rgba(10, 77, 82, 0.1);
+    border: 1px solid rgba(10, 77, 82, 0.3);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.grid-cell.active {
+    background: rgba(13, 115, 119, 0.3);
+    border-color: #0d7377;
+    animation: cellScan 0.5s ease-in-out;
+}
+
+.grid-cell::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(13, 115, 119, 0.6), transparent);
+    animation: scanLine 2s linear infinite;
+}
+
+@keyframes cellScan {
+    0% { box-shadow: none; }
+    50% { box-shadow: 0 0 15px rgba(13, 115, 119, 0.5); }
+    100% { box-shadow: none; }
+}
+
+@keyframes scanLine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Bosphorus Bridge Loading */
+.bridge-loading {
+    position: relative;
+    width: 150px;
+    height: 80px;
+    margin: 0 auto 30px;
+}
+
+.bridge {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #2c3e50, #34495e);
+    border-radius: 2px;
+}
+
+.bridge-tower {
+    position: absolute;
+    width: 4px;
+    height: 40px;
+    background: #2c3e50;
+    bottom: 0;
+}
+
+.bridge-tower:first-child {
+    left: 30px;
+}
+
+.bridge-tower:last-child {
+    right: 30px;
+}
+
+.bridge-cable {
+    position: absolute;
+    height: 1px;
+    background: rgba(44, 62, 80, 0.6);
+    animation: cableVibrate 3s ease-in-out infinite;
+}
+
+.bridge-cable:nth-child(3) {
+    width: 25px;
+    top: 10px;
+    left: 32px;
+    transform: rotate(15deg);
+    animation-delay: 0s;
+}
+
+.bridge-cable:nth-child(4) {
+    width: 25px;
+    top: 10px;
+    right: 32px;
+    transform: rotate(-15deg);
+    animation-delay: 0.5s;
+}
+
+@keyframes cableVibrate {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* Maritime Progress Bar */
+.maritime-progress {
+    width: 100%;
+    height: 6px;
+    background: rgba(10, 77, 82, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+    margin-top: 20px;
+}
+
+.progress-wave {
+    height: 100%;
+    background: linear-gradient(90deg, #0a4d52, #0d7377, #14a085, #0d7377, #0a4d52);
+    background-size: 200% 100%;
+    border-radius: 3px;
+    animation: progressWave 3s ease-in-out infinite;
+    width: var(--progress, 0%);
+    transition: width 0.5s ease;
+}
+
+@keyframes progressWave {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+/* Loading Text Animations */
+.loading-text {
+    text-align: center;
+    color: #0a4d52;
+    font-weight: 600;
+    margin-top: 15px;
+}
+
+.loading-dots::after {
+    content: '';
+    animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+}
+
+/* Overlay Styles */
+.maritime-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.3s ease;
+}
+
+.loading-container {
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(10, 77, 82, 0.1);
+    max-width: 400px;
+    width: 90%;
+}
+
+.loading-title {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.loading-subtitle {
+    color: #7f8c8d;
+    margin-bottom: 30px;
+    font-size: 0.95rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .loading-container {
+        padding: 30px 20px;
+        margin: 20px;
+    }
+    
+    .ship-container {
+        width: 100px;
+        height: 60px;
+    }
+    
+    .radar-loading {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .bridge-loading {
+        width: 120px;
+        height: 60px;
+    }
+}
