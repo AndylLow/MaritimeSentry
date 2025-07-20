@@ -21,11 +21,11 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-/* Holographic Interface Effect */
+/* Smooth Holographic Effect - No flashing */
 .holographic {
     position: relative;
-    background: linear-gradient(135deg, rgba(13, 115, 119, 0.1) 0%, rgba(20, 160, 133, 0.1) 100%);
-    border: 1px solid rgba(13, 115, 119, 0.3);
+    background: linear-gradient(135deg, rgba(13, 115, 119, 0.15) 0%, rgba(20, 160, 133, 0.1) 100%);
+    border: 1px solid rgba(13, 115, 119, 0.4);
     border-radius: 16px;
     overflow: hidden;
 }
@@ -34,44 +34,24 @@
     content: '';
     position: absolute;
     top: 0;
-    left: -100%;
+    left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, 
-        transparent, 
-        rgba(13, 115, 119, 0.3),
-        rgba(20, 160, 133, 0.4),
-        rgba(13, 115, 119, 0.3),
-        transparent
+    background: linear-gradient(135deg, 
+        rgba(13, 115, 119, 0.05) 0%, 
+        rgba(20, 160, 133, 0.1) 50%,
+        rgba(13, 115, 119, 0.05) 100%
     );
-    animation: holographicScan 3s ease-in-out infinite;
-}
-
-.holographic::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(13, 115, 119, 0.03) 2px,
-        rgba(13, 115, 119, 0.03) 4px
-    );
+    opacity: 0;
+    transition: opacity 0.5s ease;
     pointer-events: none;
 }
 
-@keyframes holographicScan {
-    0% { left: -100%; }
-    50% { left: 100%; }
-    51% { left: 100%; }
-    100% { left: 100%; }
+.holographic:hover::before {
+    opacity: 1;
 }
 
-/* Matrix Rain Effect for Background */
+/* Matrix Rain Effect for Background - Removed flashing */
 .matrix-rain {
     position: fixed;
     top: 0;
@@ -80,7 +60,8 @@
     height: 100%;
     pointer-events: none;
     z-index: -2;
-    opacity: 0.05;
+    opacity: 0.02;
+    display: none; /* Disabled to remove flashing */
 }
 
 .matrix-char {
@@ -248,36 +229,19 @@
     66% { transform: translate(-10px, 10px) scale(0.95); }
 }
 
-/* Advanced Hover States */
+/* Smooth Hover States - No white flashing */
 .advanced-hover {
     position: relative;
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.advanced-hover::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    z-index: 1;
-}
-
-.advanced-hover:hover::before {
-    width: 100%;
-    left: 100%;
-}
-
 .advanced-hover:hover {
-    transform: translateY(-5px) scale(1.02);
+    transform: translateY(-3px) scale(1.01);
     box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.15),
-        0 10px 20px rgba(13, 115, 119, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 15px 30px rgba(0, 0, 0, 0.3),
+        0 8px 15px rgba(13, 115, 119, 0.4);
+    filter: brightness(1.1);
 }
 
 /* Particle System for Interactions */
@@ -306,19 +270,10 @@
     }
 }
 
-/* Futuristic Grid Lines */
+/* Removed grid lines to eliminate squares/lines */
 .futuristic-grid {
     position: relative;
-    background-image: 
-        linear-gradient(rgba(13, 115, 119, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(13, 115, 119, 0.1) 1px, transparent 1px);
-    background-size: 20px 20px;
-    animation: gridPulse 4s ease-in-out infinite;
-}
-
-@keyframes gridPulse {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.6; }
+    /* Grid removed per user request */
 }
 
 /* Neon Glow Text Effect */

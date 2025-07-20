@@ -7,46 +7,68 @@ class ThesisWowEffects {
     }
 
     init() {
-        this.createMatrixRain();
+        this.createInteractiveBackground();
+        this.createOceanWaves();
         this.createNeuralNetwork();
         this.initParticleSystem();
         this.init3DCardEffects();
         this.initAdvancedInteractions();
-        this.createDataStreams();
+        this.initMouseFollower();
         this.initQuantumLoaders();
         this.initHolographicEffects();
     }
 
-    // Create Matrix-style falling characters
-    createMatrixRain() {
-        const container = document.createElement('div');
-        container.className = 'matrix-rain';
-        document.body.appendChild(container);
-
-        const characters = '01YOLO船舶检测BOSPHORUS';
-        const columns = Math.floor(window.innerWidth / 20);
-
-        for (let i = 0; i < columns; i++) {
-            setTimeout(() => {
-                this.createMatrixColumn(container, characters, i * 20);
-            }, i * 100);
-        }
+    // Create Interactive Background that follows mouse
+    createInteractiveBackground() {
+        const background = document.createElement('div');
+        background.className = 'interactive-background';
+        document.body.appendChild(background);
     }
 
-    createMatrixColumn(container, characters, x) {
-        const createChar = () => {
-            const char = document.createElement('div');
-            char.className = 'matrix-char';
-            char.textContent = characters[Math.floor(Math.random() * characters.length)];
-            char.style.left = x + 'px';
-            char.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            char.style.animationDelay = Math.random() * 2 + 's';
-            container.appendChild(char);
+    // Create Ocean Wave Effect
+    createOceanWaves() {
+        const waves = document.createElement('div');
+        waves.className = 'ocean-waves';
+        document.body.appendChild(waves);
+    }
 
-            setTimeout(() => char.remove(), 5000);
-        };
+    // Mouse follower effect
+    initMouseFollower() {
+        const background = document.querySelector('.interactive-background');
+        
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            
+            if (background) {
+                background.style.setProperty('--mouse-x', x + '%');
+                background.style.setProperty('--mouse-y', y + '%');
+            }
+            
+            // Create subtle particle trail
+            if (Math.random() < 0.1) {
+                this.createMouseParticle(e.clientX, e.clientY);
+            }
+        });
+    }
 
-        setInterval(createChar, 200);
+    createMouseParticle(x, y) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+            position: fixed;
+            left: ${x}px;
+            top: ${y}px;
+            width: 4px;
+            height: 4px;
+            background: rgba(13, 115, 119, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            animation: fadeOut 1s ease-out forwards;
+        `;
+        
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 1000);
     }
 
     // Create neural network visualization
@@ -378,12 +400,22 @@ document.addEventListener('DOMContentLoaded', () => {
     new ThesisWowEffects();
     PageTransitions.fadeTransition();
     
-    // Add futuristic grid to body
-    document.body.classList.add('futuristic-grid', 'gpu-accelerated');
+    // Add GPU acceleration without grid
+    document.body.classList.add('gpu-accelerated');
+    
+    // Add fadeOut animation for particles
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+    `;
+    document.head.appendChild(style);
     
     // Enable advanced console logging
-    console.log('%cBosphorus Ship Detection System - Thesis Mode Activated', 
-        'color: #0d7377; font-size: 16px; font-weight: bold; text-shadow: 0 0 10px #0d7377;');
+    console.log('%cBosphorus Ship Detection System - Enhanced Mode Activated', 
+        'color: #0d7377; font-size: 16px; font-weight: bold;');
 });
 
 // Export for global use
