@@ -7,12 +7,12 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <!-- Header -->
-            <div class="text-center mb-5 parallax-element">
-                <h1 class="display-6 fw-bold display-title" data-typewriter data-speed="70">
+            <div class="text-center mb-5">
+                <h1 class="display-6 fw-bold text-navy">
                     <i class="fas fa-upload me-3 text-ocean"></i>
                     Upload & Detect
                 </h1>
-                <p class="lead text-muted fade-in" style="animation-delay: 0.5s;">
+                <p class="lead text-muted">
                     Upload your images or videos to detect ships using advanced YOLO technology
                 </p>
             </div>
@@ -22,11 +22,11 @@
                 <div class="card-body p-5">
                     <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm">
                         <!-- Upload Zone -->
-                        <div id="uploadZone" class="upload-zone mb-4 processing-glow">
+                        <div id="uploadZone" class="upload-zone mb-4">
                             <div class="upload-content text-center">
-                                <i class="fas fa-cloud-upload-alt display-4 text-ocean mb-3 interactive-hover"></i>
-                                <h4 class="fw-bold mb-3 fade-in">Drag & Drop Your Files Here</h4>
-                                <p class="text-muted mb-4 fade-in" style="animation-delay: 0.2s;">
+                                <i class="fas fa-cloud-upload-alt display-4 text-ocean mb-3"></i>
+                                <h4 class="fw-bold mb-3">Drag & Drop Your Files Here</h4>
+                                <p class="text-muted mb-4">
                                     Or click to browse and select files from your device
                                 </p>
                                 
@@ -34,7 +34,7 @@
                                 <input type="file" name="file" id="fileInput" class="d-none" 
                                        accept="image/*,video/*" required>
                                 
-                                <button type="button" class="btn btn-ocean btn-lg pulse-glow" onclick="document.getElementById('fileInput').click()">
+                                <button type="button" class="btn btn-ocean btn-lg" onclick="document.getElementById('fileInput').click()">
                                     <i class="fas fa-folder-open me-2"></i>Browse Files
                                 </button>
                             </div>
