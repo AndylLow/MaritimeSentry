@@ -7,6 +7,17 @@ This is a sophisticated web application for ship detection in maritime environme
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+User rejected Firebase integration - wants simpler approach without external services.
+User requested improved color contrast for better readability (fixed green-on-green and black-on-gray issues).
+
+## Recent Changes (July 20, 2025)
+
+✓ Removed Firebase integration completely as requested
+✓ Fixed server errors and template routing issues  
+✓ Improved color contrast throughout the interface
+✓ Added user's personal information: Recep Ertugrul Eksi, Uskudar University
+✓ System running in simulation mode for thesis demonstration
+✓ Successfully processing uploaded images with detection results
 
 ## System Architecture
 

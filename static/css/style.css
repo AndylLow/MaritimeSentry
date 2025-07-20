@@ -2,10 +2,10 @@
 
 :root {
     --navy-blue: #2c3e50;
-    --ocean-teal: #1abc9c;
-    --light-ocean: #48c9b0;
-    --deep-ocean: #16a085;
-    --ocean-gradient: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+    --ocean-teal: #0d7377;
+    --light-ocean: #14a085;
+    --deep-ocean: #0a5d61;
+    --ocean-gradient: linear-gradient(135deg, #0d7377 0%, #0a5d61 100%);
     --navy-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
     --light-bg: #f8f9fa;
     --border-light: #e9ecef;
@@ -13,6 +13,8 @@
     --shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --text-contrast: #1a1a1a;
+    --text-light: #ffffff;
 }
 
 /* Global Styles */
@@ -35,6 +37,14 @@ body {
 
 .text-ocean {
     color: var(--ocean-teal) !important;
+}
+
+.text-contrast {
+    color: var(--text-contrast) !important;
+}
+
+.text-light {
+    color: var(--text-light) !important;
 }
 
 /* Background Classes */
@@ -73,8 +83,27 @@ body {
 
 .btn-ocean:hover {
     transform: translateY(-2px);
+    background: linear-gradient(135deg, #14a085 0%, #0d7377 100%);
     box-shadow: var(--shadow-md);
     color: white;
+}
+
+.btn-outline-ocean {
+    border: 2px solid var(--ocean-teal);
+    color: var(--ocean-teal);
+    background: transparent;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: var(--transition);
+}
+
+.btn-outline-ocean:hover {
+    background: var(--ocean-teal);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
     background: linear-gradient(135deg, #16a085 0%, #1abc9c 100%);
 }
 
@@ -308,8 +337,9 @@ body {
 
 .stat-label {
     font-size: 0.9rem;
-    color: #666;
+    color: var(--text-contrast);
     margin-top: 0.5rem;
+    font-weight: 500;
 }
 
 .stat-icon {
