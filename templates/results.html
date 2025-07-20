@@ -29,7 +29,7 @@
     <!-- Results Summary -->
     <div class="row mb-5">
         <div class="col-md-3">
-            <div class="stat-card text-center">
+            <div class="stat-card text-center detection-result animate-delay-1">
                 <div class="stat-icon mb-3">
                     <i class="fas fa-ship text-ocean"></i>
                 </div>
@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stat-card text-center">
+            <div class="stat-card text-center detection-result animate-delay-2">
                 <div class="stat-icon mb-3">
                     <i class="fas fa-percentage text-ocean"></i>
                 </div>
@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stat-card text-center">
+            <div class="stat-card text-center detection-result animate-delay-3">
                 <div class="stat-icon mb-3">
                     <i class="fas fa-clock text-ocean"></i>
                 </div>
@@ -62,7 +62,7 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stat-card text-center">
+            <div class="stat-card text-center detection-result animate-delay-4">
                 <div class="stat-icon mb-3">
                     <i class="fas fa-calendar text-ocean"></i>
                 </div>
@@ -78,16 +78,16 @@
     {% if job.result_image_path %}
     <div class="row mb-5">
         <div class="col-12">
-            <div class="card shadow-lg border-0">
+            <div class="card shadow-lg border-0 detection-result">
                 <div class="card-header bg-gradient-ocean text-white">
                     <h5 class="mb-0">
                         <i class="fas fa-image me-2"></i>Detection Results
                     </h5>
                 </div>
                 <div class="card-body p-0">
-                    <div class="position-relative">
+                    <div class="result-image-container position-relative">
                         <img src="{{ url_for('serve_result_image', filename=job.result_image_path.split('/')[-1]) }}" 
-                             class="img-fluid w-100" alt="Detection Results" id="resultImage">
+                             class="result-image img-fluid w-100 fade-transition" alt="Detection Results" id="resultImage">
                         
                         <!-- Image Controls Overlay -->
                         <div class="image-controls position-absolute top-0 end-0 p-3">
@@ -111,7 +111,7 @@
     {% if job.bounding_boxes and job.confidence_scores %}
     <div class="row mb-5">
         <div class="col-lg-8">
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0 detection-details">
                 <div class="card-header bg-light">
                     <h6 class="mb-0">
                         <i class="fas fa-list me-2 text-ocean"></i>Detection Details
@@ -130,7 +130,7 @@
                             </thead>
                             <tbody>
                                 {% for i in range(job.bounding_boxes|length) %}
-                                <tr>
+                                <tr class="detection-badge">
                                     <td class="align-middle">
                                         <span class="badge bg-ocean">{{ i + 1 }}</span>
                                     </td>
@@ -301,6 +301,114 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_scripts %}
+<!-- Results Animations -->
+<script src="{{ url_for('static', filename='js/results-animations.js') }}"></script>
+
+<!-- Chart.js for detection charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+
+{% if job.status == 'completed' and job.confidence_scores %}
+<script>
+// Initialize confidence distribution chart
+document.addEventListener('DOMContentLoaded', function() {
+    const confidenceData = {{ job.confidence_scores | tojsonfilter }};
+    
+    // Create confidence histogram
+    const confidenceCtx = document.getElementById('confidenceChart');
+    if (confidenceCtx && confidenceData) {
+        createConfidenceChart('confidenceChart', confidenceData);
+    }
+    
+    {% if job.vessel_types %}
+    // Create vessel type distribution chart
+    const vesselTypes = {{ job.vessel_types | tojsonfilter }};
+    const vesselTypeCtx = document.getElementById('vesselTypeChart');
+    if (vesselTypeCtx && vesselTypes) {
+        createVesselTypeChart('vesselTypeChart', vesselTypes);
+    }
+    {% endif %}
+});
+
+function createConfidenceChart(canvasId, confidenceData) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+    
+    // Create histogram bins
+    const bins = [0, 0.2, 0.4, 0.6, 0.8, 1.0];
+    const binCounts = new Array(bins.length - 1).fill(0);
+    
+    confidenceData.forEach(confidence => {
+        for (let i = 0; i < bins.length - 1; i++) {
+            if (confidence >= bins[i] && confidence <= bins[i + 1]) {
+                binCounts[i]++;
+                break;
+            }
+        }
+    });
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['0-20%', '20-40%', '40-60%', '60-80%', '80-100%'],
+            datasets: [{
+                label: 'Detection Count',
+                data: binCounts,
+                backgroundColor: '#0a4d52',
+                borderColor: '#0d7377',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createVesselTypeChart(canvasId, vesselTypes) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+    
+    // Count vessel types
+    const typeCounts = {};
+    vesselTypes.forEach(type => {
+        typeCounts[type] = (typeCounts[type] || 0) + 1;
+    });
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(typeCounts),
+            datasets: [{
+                data: Object.values(typeCounts),
+                backgroundColor: ['#0a4d52', '#0d7377', '#2c3e50', '#14a085'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+</script>
+{% endif %}
 
 {% block extra_scripts %}
 <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
