@@ -7,10 +7,10 @@ Chart.defaults.scale.grid.color = '#e9ecef';
 
 // Color scheme
 const colors = {
-    ocean: '#1abc9c',
-    deepOcean: '#16a085',
+    ocean: '#0a4d52',
+    deepOcean: '#0a5d61',
     navy: '#2c3e50',
-    lightOcean: '#48c9b0',
+    lightOcean: '#0d7377',
     success: '#27ae60',
     warning: '#f39c12',
     danger: '#e74c3c',
