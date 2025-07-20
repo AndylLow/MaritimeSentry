@@ -267,6 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         xhr.open('POST', this.action);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.send(formData);
     });
 });

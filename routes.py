@@ -37,14 +37,14 @@ def upload_file():
     """Handle file upload and start processing"""
     try:
         if 'file' not in request.files:
-            if request.is_json or 'multipart/form-data' in request.content_type:
+            if 'XMLHttpRequest' in request.headers.get('X-Requested-With', '') or request.is_json:
                 return jsonify({'error': 'No file selected'}), 400
             flash('No file selected', 'error')
             return redirect(request.url)
         
         file = request.files['file']
         if file.filename == '' or file.filename is None:
-            if request.is_json or 'multipart/form-data' in request.content_type:
+            if 'XMLHttpRequest' in request.headers.get('X-Requested-With', '') or request.is_json:
                 return jsonify({'error': 'No file selected'}), 400
             flash('No file selected', 'error')
             return redirect(request.url)
@@ -101,7 +101,7 @@ def upload_file():
                 logger.info(f"Processing completed for job {job.id}")
                 
                 # Return JSON response for AJAX requests
-                if request.is_json or request.headers.get('Content-Type') == 'multipart/form-data':
+                if 'XMLHttpRequest' in request.headers.get('X-Requested-With', '') or request.is_json:
                     return jsonify({
                         'success': True,
                         'redirect': url_for('results', job_id=job.id),
@@ -116,20 +116,20 @@ def upload_file():
                 job.error_message = str(e)
                 db.session.commit()
                 
-                if request.is_json or 'multipart/form-data' in request.content_type:
+                if 'XMLHttpRequest' in request.headers.get('X-Requested-With', '') or request.is_json:
                     return jsonify({'error': f'Processing failed: {str(e)}'}), 500
                 flash(f'Processing failed: {str(e)}', 'error')
                 return redirect(url_for('upload_page'))
         
         else:
-            if request.is_json or 'multipart/form-data' in request.content_type:
+            if 'XMLHttpRequest' in request.headers.get('X-Requested-With', '') or request.is_json:
                 return jsonify({'error': 'Invalid file type. Please upload an image (JPG, JPEG, PNG) or video (MP4, AVI, MOV)'}), 400
             flash('Invalid file type. Please upload an image (JPG, JPEG, PNG) or video (MP4, AVI, MOV)', 'error')
             return redirect(request.url)
             
     except Exception as e:
         logger.error(f"Upload error: {e}")
-        if request.is_json or 'multipart/form-data' in request.content_type:
+        if 'XMLHttpRequest' in request.headers.get('X-Requested-With', '') or request.is_json:
             return jsonify({'error': f'Upload failed: {str(e)}'}), 500
         flash(f'Upload failed: {str(e)}', 'error')
         return redirect(url_for('upload_page'))
