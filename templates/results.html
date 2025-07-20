@@ -86,7 +86,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="position-relative">
-                        <img src="{{ url_for('send_from_directory', directory='results', filename=job.result_image_path.split('/')[-1]) }}" 
+                        <img src="{{ url_for('serve_result_image', filename=job.result_image_path.split('/')[-1]) }}" 
                              class="img-fluid w-100" alt="Detection Results" id="resultImage">
                         
                         <!-- Image Controls Overlay -->

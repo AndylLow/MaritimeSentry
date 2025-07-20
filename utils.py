@@ -25,12 +25,12 @@ def update_statistics(detections):
             db.session.add(stats)
         
         # Update statistics
-        stats.total_images_processed += 1
-        stats.total_ships_detected += detections['ship_count']
+        stats.total_images_processed = (stats.total_images_processed or 0) + 1
+        stats.total_ships_detected = (stats.total_ships_detected or 0) + detections['ship_count']
         
         # Calculate average confidence
         if detections['confidence_scores']:
-            current_total_confidence = stats.average_confidence * (stats.total_images_processed - 1)
+            current_total_confidence = (stats.average_confidence or 0) * (stats.total_images_processed - 1)
             new_avg_confidence = sum(detections['confidence_scores']) / len(detections['confidence_scores'])
             stats.average_confidence = (current_total_confidence + new_avg_confidence) / stats.total_images_processed
         

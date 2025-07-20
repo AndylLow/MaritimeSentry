@@ -25,10 +25,7 @@ def index():
     
     return render_template('index.html', 
                          stats=recent_stats,
-                         recent_jobs=recent_jobs,
-                         firebase_api_key=os.environ.get("FIREBASE_API_KEY", ""),
-                         firebase_project_id=os.environ.get("FIREBASE_PROJECT_ID", ""),
-                         firebase_app_id=os.environ.get("FIREBASE_APP_ID", ""))
+                         recent_jobs=recent_jobs)
 
 @app.route('/upload')
 def upload_page():
@@ -172,6 +169,11 @@ def dashboard():
 def about():
     """About page with technical details"""
     return render_template('about.html')
+
+@app.route('/results/<filename>')
+def serve_result_image(filename):
+    """Serve result images"""
+    return send_from_directory(app.config['RESULTS_FOLDER'], filename)
 
 @app.route('/api/job_status/<int:job_id>')
 def job_status(job_id):
