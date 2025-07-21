@@ -190,6 +190,21 @@ def about():
     """About page with technical details"""
     return render_template('about.html')
 
+@app.route('/methodology')
+def methodology():
+    """Research methodology and system architecture"""
+    return render_template('methodology.html')
+
+@app.route('/benchmarks')
+def benchmarks():
+    """Performance benchmarks and academic validation"""
+    return render_template('benchmarks.html')
+
+@app.route('/export')
+def export_results():
+    """Export detection results for academic analysis"""
+    return render_template('export_results.html')
+
 @app.route('/results/<filename>')
 def serve_result_image(filename):
     """Serve result images"""

@@ -56,10 +56,22 @@
                             <i class="fas fa-chart-line me-1"></i>Dashboard
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('about') }}">
-                            <i class="fas fa-info-circle me-1"></i>About
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-graduation-cap me-1"></i>Research
                         </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('methodology') }}">
+                                <i class="fas fa-microscope me-2"></i>Methodology
+                            </a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('benchmarks') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Benchmarks
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('about') }}">
+                                <i class="fas fa-info-circle me-2"></i>About System
+                            </a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>

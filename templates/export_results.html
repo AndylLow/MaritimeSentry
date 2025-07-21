@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Export Results - Bosphorus Ship Detection System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-navy mb-3">
+            <i class="fas fa-download me-3 text-ocean"></i>
+            Export Detection Results
+        </h1>
+        <p class="lead text-muted">
+            Generate comprehensive reports and datasets for academic analysis
+        </p>
+    </div>
+
+    <!-- Export Options -->
+    <div class="row mb-5">
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-gradient-ocean text-white">
+                    <h4 class="mb-0"><i class="fas fa-file-csv me-2"></i>CSV Dataset</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">Export detection results as structured CSV data for statistical analysis.</p>
+                    <ul class="export-features">
+                        <li><i class="fas fa-check text-success me-2"></i>Detection coordinates</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Confidence scores</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Vessel classifications</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Timestamp data</li>
+                    </ul>
+                    <button class="btn btn-ocean w-100" onclick="exportCSV()">
+                        <i class="fas fa-download me-2"></i>Export CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-file-pdf me-2"></i>Academic Report</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">Generate comprehensive academic report with visualizations and analysis.</p>
+                    <ul class="export-features">
+                        <li><i class="fas fa-check text-success me-2"></i>Performance metrics</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Statistical analysis</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Visualization charts</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Methodology details</li>
+                    </ul>
+                    <button class="btn btn-success w-100" onclick="generateReport()">
+                        <i class="fas fa-file-pdf me-2"></i>Generate Report
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-images me-2"></i>Annotated Images</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">Download all processed images with detection annotations and metadata.</p>
+                    <ul class="export-features">
+                        <li><i class="fas fa-check text-success me-2"></i>Original images</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Annotated results</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Metadata files</li>
+                        <li><i class="fas fa-check text-success me-2"></i>ZIP package</li>
+                    </ul>
+                    <button class="btn btn-warning w-100" onclick="downloadImages()">
+                        <i class="fas fa-images me-2"></i>Download Images
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Options -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-navy text-white">
+                    <h3 class="mb-0"><i class="fas fa-filter me-2"></i>Filter Options</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Date Range</label>
+                            <div class="input-group mb-3">
+                                <input type="date" class="form-control" id="startDate">
+                                <span class="input-group-text">to</span>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Minimum Confidence</label>
+                            <input type="range" class="form-range mb-3" id="confidenceFilter" min="0" max="1" step="0.1" value="0.3">
+                            <small class="text-muted">Current: <span id="confidenceValue">30%</span></small>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Vessel Types</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="shipType" checked>
+                                <label class="form-check-label" for="shipType">Large Ships</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="boatType" checked>
+                                <label class="form-check-label" for="boatType">Small Vessels</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="cargoType" checked>
+                                <label class="form-check-label" for="cargoType">Cargo Vessels</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export History -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-history me-2"></i>Recent Exports</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Export Type</th>
+                                    <th>Date</th>
+                                    <th>Records</th>
+                                    <th>File Size</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-ocean">CSV Dataset</span></td>
+                                    <td>2025-01-20 14:30</td>
+                                    <td>156 detections</td>
+                                    <td>2.3 MB</td>
+                                    <td><span class="badge bg-success">Complete</span></td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-outline-ocean">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-success">Academic Report</span></td>
+                                    <td>2025-01-20 12:15</td>
+                                    <td>89 images</td>
+                                    <td>15.7 MB</td>
+                                    <td><span class="badge bg-success">Complete</span></td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-warning text-dark">Image Package</span></td>
+                                    <td>2025-01-19 16:45</td>
+                                    <td>45 images</td>
+                                    <td>128.4 MB</td>
+                                    <td><span class="badge bg-warning">Processing</span></td>
+                                    <td>
+                                        <div class="progress" style="width: 80px; height: 20px;">
+                                            <div class="progress-bar bg-warning" style="width: 75%"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.export-features {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.export-features li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.card-header {
+    border-bottom: none;
+}
+</style>
+
+<script>
+// Export functionality
+function exportCSV() {
+    const loader = MaritimeLoader.showShipLoading(
+        'Generating CSV Export',
+        'Preparing detection data for academic analysis...'
+    );
+    
+    // Simulate export process
+    setTimeout(() => {
+        loader.complete();
+        // Trigger download
+        const csvContent = generateCSVContent();
+        downloadFile(csvContent, 'bosphorus_detections.csv', 'text/csv');
+    }, 3000);
+}
+
+function generateReport() {
+    const loader = MaritimeLoader.showBridgeLoading(
+        'Generating Academic Report',
+        'Creating comprehensive analysis with charts and statistics...'
+    );
+    
+    setTimeout(() => {
+        loader.complete();
+        // Redirect to report generation
+        window.open('/generate_report', '_blank');
+    }, 4000);
+}
+
+function downloadImages() {
+    const loader = MaritimeLoader.showRadarLoading(
+        'Preparing Image Package',
+        'Collecting annotated images and metadata files...'
+    );
+    
+    setTimeout(() => {
+        loader.complete();
+        // Trigger ZIP download
+        window.location.href = '/download/images_package';
+    }, 5000);
+}
+
+function generateCSVContent() {
+    // Generate sample CSV content
+    return `Detection_ID,Image_Name,Vessel_Type,Confidence,X_Min,Y_Min,X_Max,Y_Max,Timestamp
+1,bosphorus_001.jpg,Ship,0.92,120,85,340,220,2025-01-20 14:30:15
+2,bosphorus_001.jpg,Boat,0.87,450,95,520,165,2025-01-20 14:30:15
+3,bosphorus_002.jpg,Cargo,0.94,200,110,480,280,2025-01-20 14:31:22`;
+}
+
+function downloadFile(content, filename, contentType) {
+    const a = document.createElement('a');
+    const file = new Blob([content], { type: contentType });
+    a.href = URL.createObjectURL(file);
+    a.download = filename;
+    a.click();
+}
+
+// Initialize filters
+document.addEventListener('DOMContentLoaded', function() {
+    const confidenceSlider = document.getElementById('confidenceFilter');
+    const confidenceDisplay = document.getElementById('confidenceValue');
+    
+    confidenceSlider.addEventListener('input', function() {
+        confidenceDisplay.textContent = Math.round(this.value * 100) + '%';
+    });
+    
+    // Set default dates
+    const today = new Date();
+    const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    document.getElementById('endDate').value = today.toISOString().split('T')[0];
+    document.getElementById('startDate').value = lastWeek.toISOString().split('T')[0];
+});
+</script>
+{% endblock %}

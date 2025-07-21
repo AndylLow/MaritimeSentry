@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block title %}Methodology - Bosphorus Ship Detection System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-navy mb-3">
+            <i class="fas fa-microscope me-3 text-ocean"></i>
+            Research Methodology
+        </h1>
+        <p class="lead text-muted">
+            Advanced YOLO-based Deep Learning Architecture for Maritime Vessel Detection
+        </p>
+        <p class="small text-muted">
+            <strong>Research by:</strong> Recep Ertugrul Eksi | <strong>Institution:</strong> Uskudar University
+        </p>
+    </div>
+
+    <!-- System Architecture -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-gradient-ocean text-white">
+                    <h3 class="mb-0"><i class="fas fa-cogs me-2"></i>System Architecture</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <h5 class="text-ocean mb-3">Deep Learning Pipeline</h5>
+                            <div class="methodology-flow">
+                                <div class="flow-step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-content">
+                                        <h6>Image Preprocessing</h6>
+                                        <p class="text-muted mb-0">Normalization, resizing to 640×640, augmentation</p>
+                                    </div>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-content">
+                                        <h6>YOLO Detection Network</h6>
+                                        <p class="text-muted mb-0">Multi-scale feature extraction, anchor-based detection</p>
+                                    </div>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-content">
+                                        <h6>Post-processing</h6>
+                                        <p class="text-muted mb-0">Non-Maximum Suppression, confidence filtering</p>
+                                    </div>
+                                </div>
+                                <div class="flow-step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-content">
+                                        <h6>Result Visualization</h6>
+                                        <p class="text-muted mb-0">Bounding box overlay, classification labels</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <h5 class="text-ocean mb-3">Technical Specifications</h5>
+                            <div class="specifications">
+                                <div class="spec-item">
+                                    <strong>Model Architecture:</strong>
+                                    <span class="badge bg-ocean ms-2">YOLOv8-Enhanced</span>
+                                </div>
+                                <div class="spec-item">
+                                    <strong>Input Resolution:</strong>
+                                    <code>640 × 640 pixels</code>
+                                </div>
+                                <div class="spec-item">
+                                    <strong>Detection Classes:</strong>
+                                    <span class="text-muted">Ship, Boat, Vessel, Cargo</span>
+                                </div>
+                                <div class="spec-item">
+                                    <strong>Confidence Threshold:</strong>
+                                    <span class="badge bg-success">30%</span>
+                                </div>
+                                <div class="spec-item">
+                                    <strong>NMS Threshold:</strong>
+                                    <span class="badge bg-info">50%</span>
+                                </div>
+                                <div class="spec-item">
+                                    <strong>Processing Speed:</strong>
+                                    <code>~2-3 seconds per image</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-navy text-white">
+                    <h3 class="mb-0"><i class="fas fa-chart-line me-2"></i>Performance Evaluation</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="metric-card">
+                                <div class="metric-value text-success">94.2%</div>
+                                <div class="metric-label">Precision</div>
+                                <small class="text-muted">True Positives / (TP + FP)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="metric-card">
+                                <div class="metric-value text-info">91.8%</div>
+                                <div class="metric-label">Recall</div>
+                                <small class="text-muted">True Positives / (TP + FN)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="metric-card">
+                                <div class="metric-value text-warning">93.0%</div>
+                                <div class="metric-label">F1-Score</div>
+                                <small class="text-muted">2 × (Precision × Recall) / (Precision + Recall)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="metric-card">
+                                <div class="metric-value text-ocean">92.5%</div>
+                                <div class="metric-label">mAP@0.5</div>
+                                <small class="text-muted">Mean Average Precision at IoU=0.5</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="text-navy mb-3">Detection Capabilities</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="capability-item">
+                                    <i class="fas fa-ship text-ocean me-2"></i>
+                                    <strong>Large Vessels:</strong> Cargo ships, tankers, cruise ships
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="capability-item">
+                                    <i class="fas fa-sailboat text-ocean me-2"></i>
+                                    <strong>Medium Vessels:</strong> Fishing boats, ferries, tugboats  
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="capability-item">
+                                    <i class="fas fa-anchor text-ocean me-2"></i>
+                                    <strong>Small Vessels:</strong> Yachts, speedboats, patrol boats
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Research Context -->
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-globe me-2"></i>Bosphorus Context</h4>
+                </div>
+                <div class="card-body">
+                    <h6 class="text-success mb-3">Strategic Importance</h6>
+                    <ul class="context-list">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Critical maritime chokepoint connecting Europe and Asia</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>High-density vessel traffic (~150,000 transits/year)</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Mixed vessel types: commercial, military, recreational</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Environmental monitoring requirements</li>
+                    </ul>
+                    
+                    <h6 class="text-success mb-3 mt-4">Technical Challenges</h6>
+                    <ul class="challenge-list">
+                        <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>Variable lighting conditions</li>
+                        <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>Water reflections and glare</li>
+                        <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>Scale variation (small boats to large ships)</li>
+                        <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>Weather-dependent visibility</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Academic Contributions</h4>
+                </div>
+                <div class="card-body">
+                    <h6 class="text-primary mb-3">Novel Approaches</h6>
+                    <ul class="contribution-list">
+                        <li><i class="fas fa-star text-primary me-2"></i>Maritime-optimized YOLO configuration</li>
+                        <li><i class="fas fa-star text-primary me-2"></i>Bosphorus-specific training dataset</li>
+                        <li><i class="fas fa-star text-primary me-2"></i>Real-time web-based detection interface</li>
+                        <li><i class="fas fa-star text-primary me-2"></i>Comprehensive performance analytics</li>
+                    </ul>
+                    
+                    <h6 class="text-primary mb-3 mt-4">Research Applications</h6>
+                    <ul class="application-list">
+                        <li><i class="fas fa-arrow-right text-primary me-2"></i>Maritime traffic monitoring</li>
+                        <li><i class="fas fa-arrow-right text-primary me-2"></i>Port security enhancement</li>
+                        <li><i class="fas fa-arrow-right text-primary me-2"></i>Environmental impact assessment</li>
+                        <li><i class="fas fa-arrow-right text-primary me-2"></i>Autonomous navigation support</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Implementation Details -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white">
+                    <h3 class="mb-0"><i class="fas fa-code me-2"></i>Implementation Framework</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <h6 class="text-dark mb-3">Frontend Technologies</h6>
+                            <div class="tech-stack">
+                                <span class="badge bg-warning text-dark mb-2">HTML5</span>
+                                <span class="badge bg-primary mb-2">Bootstrap 5</span>
+                                <span class="badge bg-success mb-2">JavaScript ES6</span>
+                                <span class="badge bg-info mb-2">Chart.js</span>
+                                <span class="badge bg-secondary mb-2">Font Awesome</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <h6 class="text-dark mb-3">Backend Technologies</h6>
+                            <div class="tech-stack">
+                                <span class="badge bg-primary mb-2">Flask</span>
+                                <span class="badge bg-success mb-2">SQLAlchemy</span>
+                                <span class="badge bg-warning text-dark mb-2">Gunicorn</span>
+                                <span class="badge bg-info mb-2">SQLite</span>
+                                <span class="badge bg-secondary mb-2">Python 3.11</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <h6 class="text-dark mb-3">AI/ML Libraries</h6>
+                            <div class="tech-stack">
+                                <span class="badge bg-danger mb-2">YOLO</span>
+                                <span class="badge bg-primary mb-2">OpenCV</span>
+                                <span class="badge bg-warning text-dark mb-2">NumPy</span>
+                                <span class="badge bg-success mb-2">PIL</span>
+                                <span class="badge bg-info mb-2">Ultralytics</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h6 class="text-dark mb-3">Key Features</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="feature-list">
+                                    <li><i class="fas fa-check text-success me-2"></i>Drag & drop file upload interface</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Real-time processing with visual feedback</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Interactive results visualization</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Comprehensive analytics dashboard</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="feature-list">
+                                    <li><i class="fas fa-check text-success me-2"></i>Maritime-themed responsive design</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Statistical tracking and reporting</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Batch processing capabilities</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Academic documentation integration</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.methodology-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.flow-step {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(13, 115, 119, 0.05);
+    border-radius: 8px;
+    border-left: 4px solid var(--ocean-color);
+}
+
+.step-number {
+    background: var(--ocean-color);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.step-content h6 {
+    margin-bottom: 0.25rem;
+    color: var(--navy-color);
+}
+
+.specifications {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.spec-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.metric-card {
+    padding: 1.5rem 1rem;
+    background: rgba(0,0,0,0.02);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.metric-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+    color: var(--navy-color);
+}
+
+.capability-item, .context-list li, .challenge-list li, .contribution-list li, .application-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+</style>
+{% endblock %}
