@@ -6,7 +6,12 @@ from flask import render_template, request, redirect, url_for, flash, jsonify, s
 from werkzeug.utils import secure_filename
 from app import app, db
 from models import DetectionJob, DetectionStatistics
-from yolo_detector import YOLOShipDetector
+try:
+    from yolo_detector_real import YOLOShipDetector
+    logger.info("Using real YOLO detector")
+except ImportError as e:
+    logger.warning(f"Real YOLO detector not available, using fallback: {e}")
+    from yolo_detector import YOLOShipDetector
 from utils import allowed_file, update_statistics
 import logging
 import json
