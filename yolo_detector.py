@@ -85,13 +85,13 @@ class YOLOShipDetector:
         # Filter and validate detections
         valid_ships = self._validate_detections(ship_candidates, width, height, confidence_threshold)
         
-        # Format results
+        # Format results with proper data types for JSON serialization
         return {
             'ship_count': len(valid_ships),
-            'bounding_boxes': [ship['bbox'] for ship in valid_ships],
-            'confidence_scores': [ship['confidence'] for ship in valid_ships],
-            'vessel_types': [ship['vessel_type'] for ship in valid_ships],
-            'class_ids': [ship['class_id'] for ship in valid_ships]
+            'bounding_boxes': [[int(coord) for coord in ship['bbox']] for ship in valid_ships],
+            'confidence_scores': [float(ship['confidence']) for ship in valid_ships],
+            'vessel_types': [str(ship['vessel_type']) for ship in valid_ships],
+            'class_ids': [int(ship['class_id']) for ship in valid_ships]
         }
     
     def _find_ship_candidates(self, img_array, width, height):
