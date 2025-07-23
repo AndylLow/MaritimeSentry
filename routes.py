@@ -79,7 +79,7 @@ def upload_file():
                 # Create annotated image
                 result_filename = f"result_{filename}"
                 result_path = os.path.join(app.config['RESULTS_FOLDER'], result_filename)
-                detector.draw_detections(file_path, detections, result_path)
+                detector.annotate_image(file_path, detections, result_path)
                 
                 processing_time = time.time() - start_time
                 
