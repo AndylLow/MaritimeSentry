@@ -6,17 +6,21 @@ from flask import render_template, request, redirect, url_for, flash, jsonify, s
 from werkzeug.utils import secure_filename
 from app import app, db
 from models import DetectionJob, DetectionStatistics
+from utils import allowed_file, update_statistics
+import logging
+import json
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+# Try to import YOLO detector
 try:
     from yolo_detector_real import YOLOShipDetector
     logger.info("Using real YOLO detector")
 except ImportError as e:
     logger.warning(f"Real YOLO detector not available, using fallback: {e}")
     from yolo_detector import YOLOShipDetector
-from utils import allowed_file, update_statistics
-import logging
-import json
-
-logger = logging.getLogger(__name__)
 
 # Initialize YOLO detector
 detector = YOLOShipDetector()
