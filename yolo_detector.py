@@ -331,3 +331,38 @@ class YOLOShipDetector:
         except Exception as e:
             logger.error(f"Error annotating image: {e}")
             raise
+    
+    def get_detection_summary(self, detections):
+        """Generate a summary of detection results"""
+        try:
+            summary = {
+                'total_ships': detections.get('ship_count', 0),
+                'vessel_breakdown': {},
+                'avg_confidence': 0.0,
+                'processing_info': {
+                    'model': detections.get('model_version', 'YOLOv8-Maritime'),
+                    'processing_time': detections.get('processing_time', 0.0),
+                    'image_size': detections.get('image_size', 'Unknown')
+                }
+            }
+            
+            # Count vessel types
+            vessel_types = detections.get('vessel_types', [])
+            for vessel_type in vessel_types:
+                summary['vessel_breakdown'][vessel_type] = summary['vessel_breakdown'].get(vessel_type, 0) + 1
+            
+            # Calculate average confidence
+            confidence_scores = detections.get('confidence_scores', [])
+            if confidence_scores:
+                summary['avg_confidence'] = sum(confidence_scores) / len(confidence_scores)
+            
+            return summary
+            
+        except Exception as e:
+            logger.error(f"Error generating detection summary: {e}")
+            return {
+                'total_ships': 0,
+                'vessel_breakdown': {},
+                'avg_confidence': 0.0,
+                'processing_info': {'model': 'Unknown', 'processing_time': 0.0, 'image_size': 'Unknown'}
+            }
