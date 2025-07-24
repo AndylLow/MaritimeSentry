@@ -46,6 +46,11 @@ class RealYOLOShipDetector:
         self.confidence_threshold = 0.15  # Lower threshold to catch smaller boats
         self.nms_threshold = 0.4          # Slightly stricter NMS for better filtering
         self.maritime_conf_boost = 0.1    # Boost confidence for maritime objects
+        
+        # Advanced detection parameters
+        self.multi_scale_sizes = [416, 640, 832]  # Multiple input sizes for better detection
+        self.tile_overlap = 0.2           # Overlap for tile-based detection on large images
+        self.max_image_size = 1280        # Maximum image size for processing
         self.model = None
         
         if YOLO_AVAILABLE:
@@ -111,6 +116,9 @@ class RealYOLOShipDetector:
         if confidence_threshold is None:
             confidence_threshold = self.confidence_threshold
         
+        # Adaptive confidence threshold based on image characteristics
+        confidence_threshold = self._adaptive_confidence_threshold(image_path, confidence_threshold)
+        
         start_time = time.time()
         
         try:
@@ -120,19 +128,33 @@ class RealYOLOShipDetector:
             
             logger.info(f"Running YOLO detection on: {image_path}")
             
+            # Get optimal parameters for this image
+            optimal_params = self._get_optimal_detection_params(image_path)
+            
             # Run YOLO inference with optimized parameters
             results = self.model(
                 image_path,
                 conf=confidence_threshold,
                 iou=self.nms_threshold,
                 verbose=False,
-                imgsz=640,        # Standard YOLO image size
-                max_det=50,       # Allow more detections for crowded maritime scenes
-                agnostic_nms=True # Use class-agnostic NMS for better results
+                imgsz=optimal_params['image_size'],
+                max_det=optimal_params['max_detections'],
+                agnostic_nms=True,
+                augment=True,     # Test Time Augmentation for better accuracy
+                half=False        # Use FP32 for better precision on CPU
             )
             
-            # Process results
+            # Process results with advanced post-processing
             detections = self._process_yolo_results(results[0], image_path)
+            
+            # Apply advanced post-processing for maritime detection
+            detections = self._apply_advanced_post_processing(detections, image_path)
+            
+            # Multi-scale detection for better accuracy (if image is large enough)
+            if optimal_params['original_size'][0] > 1280 or optimal_params['original_size'][1] > 1280:
+                logger.info("Applying multi-scale detection for large image")
+                multi_scale_detections = self._multi_scale_detection(image_path, confidence_threshold)
+                detections = self._merge_detections([detections, multi_scale_detections])
             
             # Add metadata
             processing_time = time.time() - start_time
@@ -276,6 +298,44 @@ class RealYOLOShipDetector:
         
         return False
     
+    def _get_optimal_detection_params(self, image_path):
+        """Get optimal detection parameters based on image characteristics"""
+        try:
+            with Image.open(image_path) as img:
+                width, height = img.size
+                
+            # Calculate optimal image size for processing
+            max_dim = max(width, height)
+            
+            if max_dim <= 640:
+                image_size = 640
+                max_detections = 30
+            elif max_dim <= 1280:
+                image_size = 832  # Larger size for better small object detection
+                max_detections = 50
+            else:
+                image_size = 1280  # Maximum practical size
+                max_detections = 100  # More detections for very large images
+            
+            # Adjust for maritime context
+            aspect_ratio = width / height
+            if aspect_ratio > 2.0:  # Wide maritime panoramic images
+                max_detections = int(max_detections * 1.5)
+            
+            return {
+                'image_size': image_size,
+                'max_detections': max_detections,
+                'original_size': (width, height)
+            }
+            
+        except Exception as e:
+            logger.warning(f"Could not analyze image for optimal params: {e}")
+            return {
+                'image_size': 640,
+                'max_detections': 50,
+                'original_size': (640, 640)
+            }
+    
     def _classify_vessel(self, yolo_class, width, height, img_width, img_height, confidence):
         """Classify vessel type based on YOLO detection and size"""
         
@@ -313,6 +373,387 @@ class RealYOLOShipDetector:
                 class_id = 5
         
         return vessel_type, class_id
+    
+    def _multi_scale_detection(self, image_path, confidence_threshold):
+        """Run detection at multiple scales for better small object detection"""
+        try:
+            logger.info("Running multi-scale YOLO detection...")
+            all_detections = []
+            
+            # Different scales for comprehensive detection
+            scales = [640, 832, 1024]
+            
+            for scale in scales:
+                try:
+                    results = self.model(
+                        image_path,
+                        conf=confidence_threshold * 0.8,  # Slightly lower threshold
+                        iou=self.nms_threshold,
+                        verbose=False,
+                        imgsz=scale,
+                        max_det=100,
+                        agnostic_nms=True,
+                        augment=False  # Skip augmentation for speed
+                    )
+                    
+                    scale_detections = self._process_yolo_results(results[0], image_path)
+                    all_detections.append(scale_detections)
+                    
+                except Exception as e:
+                    logger.warning(f"Multi-scale detection failed at scale {scale}: {e}")
+                    continue
+            
+            # Merge all detections with NMS
+            if all_detections:
+                return self._merge_detections(all_detections)
+            else:
+                return self._empty_detection_result()
+                
+        except Exception as e:
+            logger.error(f"Multi-scale detection failed: {e}")
+            return self._empty_detection_result()
+    
+    def _apply_advanced_post_processing(self, detections, image_path):
+        """Apply advanced post-processing to improve detection quality"""
+        try:
+            if detections['ship_count'] == 0:
+                return detections
+            
+            # Get image dimensions
+            with Image.open(image_path) as img:
+                img_width, img_height = img.size
+            
+            # 1. Maritime context filtering
+            detections = self._maritime_context_filter(detections, img_width, img_height)
+            
+            # 2. Size-based confidence adjustment
+            detections = self._size_based_confidence_adjustment(detections, img_width, img_height)
+            
+            # 3. Vessel clustering for grouped objects
+            detections = self._vessel_clustering(detections)
+            
+            logger.info(f"Post-processing: {detections['ship_count']} vessels after filtering")
+            return detections
+            
+        except Exception as e:
+            logger.error(f"Advanced post-processing failed: {e}")
+            return detections
+    
+    def _maritime_context_filter(self, detections, img_width, img_height):
+        """Filter detections based on maritime context"""
+        if detections['ship_count'] == 0:
+            return detections
+        
+        filtered_indices = []
+        
+        for i in range(detections['ship_count']):
+            bbox = detections['bounding_boxes'][i]
+            confidence = detections['confidence_scores'][i]
+            x1, y1, x2, y2 = bbox
+            
+            # Center point
+            center_x = (x1 + x2) / 2
+            center_y = (y1 + y2) / 2
+            
+            # Size metrics
+            width = x2 - x1
+            height = y2 - y1
+            area = width * height
+            relative_area = area / (img_width * img_height)
+            
+            # Maritime filtering rules
+            keep_detection = True
+            
+            # Rule 1: Minimum size threshold
+            if relative_area < 0.0005:  # Too small to be a meaningful vessel
+                keep_detection = False
+                logger.debug(f"Filtered out small detection: {relative_area:.6f}")
+            
+            # Rule 2: Position in image (vessels should be in water area)
+            if center_y < img_height * 0.15:  # Too high (likely sky/background)
+                keep_detection = False
+                logger.debug(f"Filtered out high detection at y={center_y}")
+            
+            # Rule 3: Aspect ratio check
+            aspect_ratio = width / height
+            if aspect_ratio < 0.8 or aspect_ratio > 10.0:  # Too narrow or too wide
+                keep_detection = False
+                logger.debug(f"Filtered out bad aspect ratio: {aspect_ratio:.2f}")
+            
+            # Rule 4: Confidence vs size correlation
+            if confidence < 0.3 and relative_area < 0.005:
+                keep_detection = False
+                logger.debug(f"Filtered out low confidence small object: {confidence:.3f}")
+            
+            if keep_detection:
+                filtered_indices.append(i)
+        
+        # Apply filtering
+        return self._filter_detections_by_indices(detections, filtered_indices)
+    
+    def _size_based_confidence_adjustment(self, detections, img_width, img_height):
+        """Adjust confidence scores based on vessel size and maritime context"""
+        for i in range(detections['ship_count']):
+            bbox = detections['bounding_boxes'][i]
+            confidence = detections['confidence_scores'][i]
+            x1, y1, x2, y2 = bbox
+            
+            width = x2 - x1
+            height = y2 - y1
+            area = width * height
+            relative_area = area / (img_width * img_height)
+            center_y = (y1 + y2) / 2
+            
+            # Boost confidence for well-positioned large vessels
+            if relative_area > 0.01 and center_y > img_height * 0.3:
+                confidence_boost = min(0.15, relative_area * 2)
+                detections['confidence_scores'][i] = min(0.99, confidence + confidence_boost)
+            
+            # Slight penalty for very small objects
+            elif relative_area < 0.002:
+                detections['confidence_scores'][i] = max(0.05, confidence * 0.9)
+        
+        return detections
+    
+    def _vessel_clustering(self, detections):
+        """Group nearby detections that likely represent the same vessel"""
+        if detections['ship_count'] <= 1:
+            return detections
+        
+        # Simple clustering based on IoU and proximity
+        keep_indices = []
+        processed = set()
+        
+        for i in range(detections['ship_count']):
+            if i in processed:
+                continue
+                
+            current_bbox = detections['bounding_boxes'][i]
+            current_conf = detections['confidence_scores'][i]
+            best_idx = i
+            best_conf = current_conf
+            
+            # Check for overlapping detections
+            for j in range(i + 1, detections['ship_count']):
+                if j in processed:
+                    continue
+                    
+                other_bbox = detections['bounding_boxes'][j]
+                other_conf = detections['confidence_scores'][j]
+                
+                # Calculate IoU
+                iou = self._calculate_iou(current_bbox, other_bbox)
+                
+                if iou > 0.3:  # Overlapping detections
+                    processed.add(j)
+                    if other_conf > best_conf:
+                        best_idx = j
+                        best_conf = other_conf
+            
+            keep_indices.append(best_idx)
+            processed.add(best_idx)
+        
+        return self._filter_detections_by_indices(detections, keep_indices)
+    
+    def _calculate_iou(self, bbox1, bbox2):
+        """Calculate Intersection over Union (IoU) between two bounding boxes"""
+        x1_1, y1_1, x2_1, y2_1 = bbox1
+        x1_2, y1_2, x2_2, y2_2 = bbox2
+        
+        # Calculate intersection
+        x1_i = max(x1_1, x1_2)
+        y1_i = max(y1_1, y1_2)
+        x2_i = min(x2_1, x2_2)
+        y2_i = min(y2_1, y2_2)
+        
+        if x2_i <= x1_i or y2_i <= y1_i:
+            return 0.0
+        
+        intersection = (x2_i - x1_i) * (y2_i - y1_i)
+        
+        # Calculate union
+        area1 = (x2_1 - x1_1) * (y2_1 - y1_1)
+        area2 = (x2_2 - x1_2) * (y2_2 - y1_2)
+        union = area1 + area2 - intersection
+        
+        return intersection / union if union > 0 else 0.0
+    
+    def _merge_detections(self, detection_list):
+        """Merge multiple detection results with Non-Maximum Suppression"""
+        if not detection_list or len(detection_list) == 0:
+            return self._empty_detection_result()
+        
+        if len(detection_list) == 1:
+            return detection_list[0]
+        
+        # Combine all detections
+        all_bboxes = []
+        all_confidences = []
+        all_vessel_types = []
+        all_class_ids = []
+        all_yolo_classes = []
+        
+        for detections in detection_list:
+            if detections['ship_count'] > 0:
+                all_bboxes.extend(detections['bounding_boxes'])
+                all_confidences.extend(detections['confidence_scores'])
+                all_vessel_types.extend(detections['vessel_types'])
+                all_class_ids.extend(detections['class_ids'])
+                all_yolo_classes.extend(detections['yolo_classes'])
+        
+        if not all_bboxes:
+            return self._empty_detection_result()
+        
+        # Apply NMS
+        final_indices = self._apply_nms(all_bboxes, all_confidences, self.nms_threshold)
+        
+        # Build final result
+        merged_detections = {
+            'ship_count': len(final_indices),
+            'bounding_boxes': [all_bboxes[i] for i in final_indices],
+            'confidence_scores': [all_confidences[i] for i in final_indices],
+            'vessel_types': [all_vessel_types[i] for i in final_indices],
+            'class_ids': [all_class_ids[i] for i in final_indices],
+            'yolo_classes': [all_yolo_classes[i] for i in final_indices]
+        }
+        
+        return merged_detections
+    
+    def _apply_nms(self, bboxes, confidences, iou_threshold):
+        """Apply Non-Maximum Suppression"""
+        if not bboxes:
+            return []
+        
+        # Sort by confidence
+        indices = sorted(range(len(confidences)), key=lambda i: confidences[i], reverse=True)
+        keep = []
+        
+        while indices:
+            current = indices.pop(0)
+            keep.append(current)
+            
+            # Remove overlapping boxes
+            indices = [i for i in indices 
+                      if self._calculate_iou(bboxes[current], bboxes[i]) < iou_threshold]
+        
+        return keep
+    
+    def _filter_detections_by_indices(self, detections, indices):
+        """Filter detection results by keeping only specified indices"""
+        filtered_detections = {
+            'ship_count': len(indices),
+            'bounding_boxes': [detections['bounding_boxes'][i] for i in indices],
+            'confidence_scores': [detections['confidence_scores'][i] for i in indices],
+            'vessel_types': [detections['vessel_types'][i] for i in indices],
+            'class_ids': [detections['class_ids'][i] for i in indices],
+            'yolo_classes': [detections['yolo_classes'][i] for i in indices]
+        }
+        return filtered_detections
+    
+    def _empty_detection_result(self):
+        """Return empty detection result structure"""
+        return {
+            'ship_count': 0,
+            'bounding_boxes': [],
+            'confidence_scores': [],
+            'vessel_types': [],
+            'class_ids': [],
+            'yolo_classes': []
+        }
+    
+    def _adaptive_confidence_threshold(self, image_path, base_threshold):
+        """Adaptively adjust confidence threshold based on image characteristics"""
+        try:
+            with Image.open(image_path) as img:
+                width, height = img.size
+                img_array = np.array(img.convert('RGB'))
+            
+            # Calculate image quality metrics
+            brightness = np.mean(img_array)
+            contrast = np.std(img_array)
+            
+            # Adjust threshold based on image quality
+            adjusted_threshold = base_threshold
+            
+            # Lower threshold for high quality, well-lit images
+            if brightness > 120 and contrast > 50:
+                adjusted_threshold = max(0.1, base_threshold * 0.85)
+                logger.debug(f"High quality image: lowered threshold to {adjusted_threshold:.3f}")
+            
+            # Higher threshold for low quality or dark images
+            elif brightness < 80 or contrast < 30:
+                adjusted_threshold = min(0.4, base_threshold * 1.2)
+                logger.debug(f"Low quality image: raised threshold to {adjusted_threshold:.3f}")
+            
+            # Adjust for image size - smaller images need higher confidence
+            if width * height < 640 * 640:
+                adjusted_threshold = min(0.5, adjusted_threshold * 1.1)
+                logger.debug(f"Small image: adjusted threshold to {adjusted_threshold:.3f}")
+            
+            return adjusted_threshold
+            
+        except Exception as e:
+            logger.warning(f"Could not analyze image for adaptive threshold: {e}")
+            return base_threshold
+    
+    def get_detection_summary(self, detections):
+        """Generate comprehensive detection summary with maritime analytics"""
+        if detections['ship_count'] == 0:
+            return {
+                'summary': 'No vessels detected in maritime area',
+                'detection_quality': 'N/A',
+                'vessel_distribution': {},
+                'confidence_analysis': 'N/A'
+            }
+        
+        # Analyze vessel distribution
+        vessel_counts = {}
+        confidence_scores = detections['confidence_scores']
+        
+        for vessel_type in detections['vessel_types']:
+            vessel_counts[vessel_type] = vessel_counts.get(vessel_type, 0) + 1
+        
+        # Quality assessment
+        avg_confidence = sum(confidence_scores) / len(confidence_scores)
+        high_conf_count = sum(1 for c in confidence_scores if c > 0.7)
+        
+        quality = 'Excellent' if avg_confidence > 0.8 else \
+                 'Good' if avg_confidence > 0.6 else \
+                 'Fair' if avg_confidence > 0.4 else 'Poor'
+        
+        summary_text = f"Detected {detections['ship_count']} vessel(s) in maritime surveillance area. "
+        summary_text += f"Primary vessel types: {', '.join(vessel_counts.keys())}. "
+        summary_text += f"Detection confidence: {quality} (avg: {avg_confidence:.3f})"
+        
+        return {
+            'summary': summary_text,
+            'detection_quality': quality,
+            'vessel_distribution': vessel_counts,
+            'confidence_analysis': {
+                'average': avg_confidence,
+                'high_confidence_count': high_conf_count,
+                'confidence_range': f"{min(confidence_scores):.3f} - {max(confidence_scores):.3f}"
+            },
+            'maritime_analytics': {
+                'total_vessels': detections['ship_count'],
+                'vessel_types': len(vessel_counts),
+                'largest_vessel_area': self._calculate_largest_vessel_area(detections),
+                'fleet_distribution': vessel_counts
+            }
+        }
+    
+    def _calculate_largest_vessel_area(self, detections):
+        """Calculate the area of the largest detected vessel"""
+        if detections['ship_count'] == 0:
+            return 0
+        
+        max_area = 0
+        for bbox in detections['bounding_boxes']:
+            x1, y1, x2, y2 = bbox
+            area = (x2 - x1) * (y2 - y1)
+            max_area = max(max_area, area)
+        
+        return max_area
     
     def annotate_image(self, image_path, detections, output_path):
         """Draw YOLO detection results on image"""
