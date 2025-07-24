@@ -43,9 +43,9 @@ class RealYOLOShipDetector:
         }
         
         # Optimized parameters for maritime detection
-        self.confidence_threshold = 0.15  # Lower threshold to catch smaller boats
-        self.nms_threshold = 0.4          # Slightly stricter NMS for better filtering
-        self.maritime_conf_boost = 0.1    # Boost confidence for maritime objects
+        self.confidence_threshold = 0.12  # Lower threshold to catch more vessels
+        self.nms_threshold = 0.45         # Balanced NMS for good filtering without losing ships
+        self.maritime_conf_boost = 0.08   # Modest boost for maritime objects
         
         # Advanced detection parameters
         self.multi_scale_sizes = [416, 640, 832]  # Multiple input sizes for better detection
@@ -256,13 +256,13 @@ class RealYOLOShipDetector:
         width = x2 - x1
         height = y2 - y1
         
-        # Size-based filtering - should be reasonably sized
-        if width < 15 or height < 10:
+        # Size-based filtering - should be reasonably sized (relaxed)
+        if width < 10 or height < 8:
             return False
         
-        # Aspect ratio check - ships are typically longer than tall
+        # Aspect ratio check - ships are typically longer than tall (relaxed for different vessel types)
         aspect_ratio = width / height
-        if aspect_ratio < 1.1 or aspect_ratio > 8.0:
+        if aspect_ratio < 0.8 or aspect_ratio > 12.0:  # More permissive for various vessel orientations
             return False
         
         # Position check - likely in water (middle or lower part of image for typical maritime photos)
@@ -270,7 +270,7 @@ class RealYOLOShipDetector:
         if center_y < img_height * 0.2:  # Too high in image (likely sky)
             return False
         
-        # Additional classes that might be ships in maritime context
+        # Additional classes that might be ships in maritime context - STRICT validation needed
         possible_maritime_classes = [
             'car',  # Sometimes ships are misclassified as cars
             'truck',  # Large vessels might be detected as trucks
@@ -278,25 +278,70 @@ class RealYOLOShipDetector:
         ]
         
         if class_name.lower() in possible_maritime_classes:
-            # More strict validation for ambiguous classes
+            # VERY strict validation for ambiguous classes to avoid buildings
             
-            # Should be in lower portion of image (water area)
+            # Must be in water area (lower 60% of image)
             if center_y < img_height * 0.4:
                 return False
             
-            # Should have ship-like aspect ratio
-            if not (1.5 <= aspect_ratio <= 6.0):
+            # Buildings often have square/vertical aspect ratios - reject these
+            if aspect_ratio < 1.2 or aspect_ratio > 8.0:  # Ships should be reasonably horizontal
                 return False
             
-            # Should be reasonably sized for a vessel
+            # Size validation - not too large (buildings) or too small
             area_ratio = (width * height) / (img_width * img_height)
-            if area_ratio < 0.001 or area_ratio > 0.15:  # Between 0.1% and 15% of image
+            if area_ratio < 0.0008 or area_ratio > 0.12:
                 return False
             
-            logger.info(f"Accepting {class_name} as potential vessel based on maritime context")
+            # Advanced building detection
+            if not self._passes_building_detection_filter(x1, y1, x2, y2, img_width, img_height, aspect_ratio):
+                logger.debug(f"Rejected {class_name} as potential building")
+                return False
+            
+            logger.debug(f"Accepting {class_name} as potential vessel after strict validation")
             return True
         
         return False
+    
+    def _passes_building_detection_filter(self, x1, y1, x2, y2, img_width, img_height, aspect_ratio):
+        """Advanced building detection filter to avoid false positives"""
+        width = x2 - x1
+        height = y2 - y1
+        center_x = (x1 + x2) / 2
+        center_y = (y1 + y2) / 2
+        
+        # Building characteristics to avoid:
+        
+        # 1. Too vertical/square - buildings are often taller than wide
+        if aspect_ratio < 1.3 and height > width * 0.7:
+            return False
+        
+        # 2. Fixed at image edges with building-like proportions
+        edge_threshold = 0.08
+        near_left_edge = x1 < img_width * edge_threshold
+        near_right_edge = x2 > img_width * (1 - edge_threshold)
+        near_bottom_edge = y2 > img_height * (1 - edge_threshold)
+        
+        if (near_left_edge or near_right_edge) and aspect_ratio < 2.5:
+            return False
+        
+        if near_bottom_edge and aspect_ratio < 1.8:
+            return False
+        
+        # 3. Located in typical building zones (upper half with square proportions)
+        if center_y < img_height * 0.5 and aspect_ratio < 1.5:
+            return False
+        
+        # 4. Very large objects that span significant portions of image (buildings/structures)
+        area_ratio = (width * height) / (img_width * img_height)
+        if area_ratio > 0.08 and aspect_ratio < 2.0:  # Large square objects likely buildings
+            return False
+        
+        # 5. Positioned like coastal structures
+        if center_y < img_height * 0.6 and (near_left_edge or near_right_edge) and aspect_ratio < 3.0:
+            return False
+        
+        return True
     
     def _get_optimal_detection_params(self, image_path):
         """Get optimal detection parameters based on image characteristics"""
@@ -464,26 +509,32 @@ class RealYOLOShipDetector:
             # Maritime filtering rules
             keep_detection = True
             
-            # Rule 1: Minimum size threshold
-            if relative_area < 0.0005:  # Too small to be a meaningful vessel
+            # Rule 1: Minimum size threshold (relaxed)
+            if relative_area < 0.0003:  # Smaller threshold to catch more vessels
                 keep_detection = False
-                logger.debug(f"Filtered out small detection: {relative_area:.6f}")
+                logger.debug(f"Filtered out tiny detection: {relative_area:.6f}")
             
-            # Rule 2: Position in image (vessels should be in water area)
-            if center_y < img_height * 0.15:  # Too high (likely sky/background)
+            # Rule 2: Position in image - more permissive for different camera angles
+            if center_y < img_height * 0.08:  # Only filter very high objects (sky)
                 keep_detection = False
-                logger.debug(f"Filtered out high detection at y={center_y}")
+                logger.debug(f"Filtered out sky detection at y={center_y}")
             
-            # Rule 3: Aspect ratio check
+            # Rule 3: Aspect ratio check - more permissive
             aspect_ratio = width / height
-            if aspect_ratio < 0.8 or aspect_ratio > 10.0:  # Too narrow or too wide
+            if aspect_ratio < 0.6 or aspect_ratio > 15.0:  # Very permissive range
                 keep_detection = False
-                logger.debug(f"Filtered out bad aspect ratio: {aspect_ratio:.2f}")
+                logger.debug(f"Filtered out extreme aspect ratio: {aspect_ratio:.2f}")
             
-            # Rule 4: Confidence vs size correlation
-            if confidence < 0.3 and relative_area < 0.005:
+            # Rule 4: Confidence vs size correlation (relaxed)
+            if confidence < 0.25 and relative_area < 0.003:
                 keep_detection = False
-                logger.debug(f"Filtered out low confidence small object: {confidence:.3f}")
+                logger.debug(f"Filtered out low confidence tiny object: {confidence:.3f}")
+            
+            # Rule 5: Building detection - reject square objects in building-like positions
+            yolo_class = detections['yolo_classes'][i] if i < len(detections.get('yolo_classes', [])) else ""
+            if yolo_class.lower() in ['car', 'truck', 'bus'] and aspect_ratio < 1.3 and center_y < img_height * 0.5:
+                keep_detection = False
+                logger.debug(f"Filtered out potential building: {yolo_class} with ratio {aspect_ratio:.2f}")
             
             if keep_detection:
                 filtered_indices.append(i)
@@ -675,20 +726,32 @@ class RealYOLOShipDetector:
             # Adjust threshold based on image quality
             adjusted_threshold = base_threshold
             
-            # Lower threshold for high quality, well-lit images
-            if brightness > 120 and contrast > 50:
-                adjusted_threshold = max(0.1, base_threshold * 0.85)
+            # Enhanced adaptive thresholding
+            
+            # Lower threshold for high quality maritime images
+            if brightness > 110 and contrast > 45:
+                adjusted_threshold = max(0.08, base_threshold * 0.8)
                 logger.debug(f"High quality image: lowered threshold to {adjusted_threshold:.3f}")
             
-            # Higher threshold for low quality or dark images
-            elif brightness < 80 or contrast < 30:
-                adjusted_threshold = min(0.4, base_threshold * 1.2)
+            # Higher threshold for low quality images to reduce false positives
+            elif brightness < 70 or contrast < 25:
+                adjusted_threshold = min(0.35, base_threshold * 1.3)
                 logger.debug(f"Low quality image: raised threshold to {adjusted_threshold:.3f}")
             
-            # Adjust for image size - smaller images need higher confidence
+            # Special handling for complex maritime scenes
+            elif brightness > 90 and contrast > 60:  # Very clear maritime photos
+                adjusted_threshold = max(0.06, base_threshold * 0.7)
+                logger.debug(f"Clear maritime scene: optimized threshold to {adjusted_threshold:.3f}")
+            
+            # Adjust for image size - smaller images need slightly higher confidence
             if width * height < 640 * 640:
-                adjusted_threshold = min(0.5, adjusted_threshold * 1.1)
+                adjusted_threshold = min(0.4, adjusted_threshold * 1.05)
                 logger.debug(f"Small image: adjusted threshold to {adjusted_threshold:.3f}")
+            
+            # For very large images, be more permissive to catch distant vessels
+            elif width * height > 1920 * 1080:
+                adjusted_threshold = max(0.05, adjusted_threshold * 0.9)
+                logger.debug(f"Large image: lowered threshold to {adjusted_threshold:.3f}")
             
             return adjusted_threshold
             
