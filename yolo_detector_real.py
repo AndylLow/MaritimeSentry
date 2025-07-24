@@ -43,14 +43,14 @@ class RealYOLOShipDetector:
         }
         
         # Optimized parameters for maritime detection
-        self.confidence_threshold = 0.12  # Lower threshold to catch more vessels
-        self.nms_threshold = 0.45         # Balanced NMS for good filtering without losing ships
-        self.maritime_conf_boost = 0.08   # Modest boost for maritime objects
+        self.confidence_threshold = 0.08  # Even lower threshold to catch more vessels
+        self.nms_threshold = 0.35         # Lower NMS for better ship retention
+        self.maritime_conf_boost = 0.12   # Higher boost for maritime objects
         
         # Advanced detection parameters
-        self.multi_scale_sizes = [416, 640, 832]  # Multiple input sizes for better detection
-        self.tile_overlap = 0.2           # Overlap for tile-based detection on large images
-        self.max_image_size = 1280        # Maximum image size for processing
+        self.multi_scale_sizes = [640, 832, 1024]  # Multiple input sizes for better detection
+        self.tile_overlap = 0.25          # Higher overlap for better detection on large images
+        self.max_image_size = 1536        # Larger maximum image size for better detail
         self.model = None
         
         if YOLO_AVAILABLE:
@@ -81,7 +81,8 @@ class RealYOLOShipDetector:
                 raise Exception("Failed to load any YOLO model")
             
             # Set model to eval mode and optimize for inference
-            self.model.model.eval()
+            if hasattr(self.model, 'model') and self.model.model is not None:
+                self.model.model.eval()
             
             # Optimize model for better maritime detection
             # This sets the model to focus more on relevant classes
@@ -239,10 +240,11 @@ class RealYOLOShipDetector:
     def _is_maritime_object(self, cls, class_name, bbox, img_width, img_height):
         """Determine if detected object is likely a maritime vessel"""
         
-        # Primary maritime classes
+        # Primary maritime classes - expanded list
         maritime_class_names = [
             'boat', 'ship', 'yacht', 'sailboat', 'motorboat', 
-            'ferry', 'vessel', 'watercraft'
+            'ferry', 'vessel', 'watercraft', 'dinghy', 'speedboat',
+            'catamaran', 'cruise', 'cargo', 'tanker', 'freighter'
         ]
         
         # Check if it's a known maritime class
@@ -256,18 +258,18 @@ class RealYOLOShipDetector:
         width = x2 - x1
         height = y2 - y1
         
-        # Size-based filtering - should be reasonably sized (relaxed)
-        if width < 10 or height < 8:
+        # Size-based filtering - should be reasonably sized (more relaxed)
+        if width < 8 or height < 6:
             return False
         
-        # Aspect ratio check - ships are typically longer than tall (relaxed for different vessel types)
+        # Aspect ratio check - ships are typically longer than tall (very relaxed for different vessel types)
         aspect_ratio = width / height
-        if aspect_ratio < 0.8 or aspect_ratio > 12.0:  # More permissive for various vessel orientations
+        if aspect_ratio < 0.5 or aspect_ratio > 15.0:  # Very permissive for various vessel orientations
             return False
         
-        # Position check - likely in water (middle or lower part of image for typical maritime photos)
+        # Position check - likely in water (relaxed to catch distant ships)
         center_y = (y1 + y2) / 2
-        if center_y < img_height * 0.2:  # Too high in image (likely sky)
+        if center_y < img_height * 0.1:  # Only reject if very high in image (likely sky)
             return False
         
         # Additional classes that might be ships in maritime context - STRICT validation needed
@@ -280,17 +282,17 @@ class RealYOLOShipDetector:
         if class_name.lower() in possible_maritime_classes:
             # VERY strict validation for ambiguous classes to avoid buildings
             
-            # Must be in water area (lower 60% of image)
-            if center_y < img_height * 0.4:
+            # Must be in reasonable water area (relaxed for distant ships)
+            if center_y < img_height * 0.25:
                 return False
             
-            # Buildings often have square/vertical aspect ratios - reject these
-            if aspect_ratio < 1.2 or aspect_ratio > 8.0:  # Ships should be reasonably horizontal
+            # Buildings often have square/vertical aspect ratios - be more lenient
+            if aspect_ratio < 0.9 or aspect_ratio > 10.0:  # More lenient for various ship orientations
                 return False
             
-            # Size validation - not too large (buildings) or too small
+            # Size validation - relaxed to catch more ships
             area_ratio = (width * height) / (img_width * img_height)
-            if area_ratio < 0.0008 or area_ratio > 0.12:
+            if area_ratio < 0.0005 or area_ratio > 0.15:
                 return False
             
             # Advanced building detection

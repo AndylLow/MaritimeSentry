@@ -32,6 +32,15 @@ User requested improved color contrast for better readability (fixed green-on-gr
 ✓ **IoU-Based NMS**: Advanced Non-Maximum Suppression for cleaner detection results
 ✓ **Optimal Parameter Selection**: Automatic parameter tuning based on image characteristics
 
+### Latest Detection Accuracy Improvements (July 24, 2025)
+✓ **Enhanced Sensitivity**: Lowered confidence threshold to 0.08 for better ship detection coverage
+✓ **Relaxed Position Filtering**: Reduced vertical position constraints to catch distant ships
+✓ **Expanded Maritime Classes**: Added comprehensive ship type recognition (cargo, tanker, freighter, etc.)
+✓ **Improved Size Validation**: More permissive size and aspect ratio filtering for diverse vessel types
+✓ **Optimized NMS**: Reduced non-maximum suppression threshold to 0.35 for better ship retention
+✓ **Higher Maritime Boost**: Increased confidence boost to 0.12 for confirmed maritime objects
+✓ **LaTeX Thesis Documentation**: Created comprehensive academic thesis documenting the entire system
+
 ### Previous Computer Vision Implementation (Now Replaced)
 ✓ **COMPLETE YOLO DETECTOR REWRITE**: Built clean, working ship detector from scratch after critical system failures
 ✓ **Real Computer Vision**: Implemented actual OpenCV-based ship detection using contour analysis and edge detection
