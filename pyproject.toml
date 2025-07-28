@@ -8,17 +8,16 @@ dependencies = [
     "flask>=3.1.1",
     "flask-sqlalchemy>=3.1.1",
     "gunicorn>=23.0.0",
-    "psycopg2-binary>=2.9.10",
-    "pillow>=9.0.0",
-    "numpy>=1.21.0",
-    "requests>=2.28.0",
+    "numpy>=2.3.2",
     "opencv-python>=4.11.0.86",
+    "pillow>=9.0.0",
+    "psycopg2-binary>=2.9.10",
+    "requests>=2.28.0",
     "scipy>=1.9.0",
     "sqlalchemy>=2.0.41",
+    "torch>=2.7.1",
+    "torchvision>=0.22.1",
     "werkzeug>=3.1.3",
-    "ultralytics>=8.0.0",
-    "torch>=2.0.0,<3.0.0",
-    "torchvision>=0.15.0,<1.0.0",
 ]
 
 [[tool.uv.index]]
@@ -981,6 +980,7 @@ tmnt = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 toad = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 tomesd = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 top2vec = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
+torch = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 torch-audiomentations = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 torch-dct = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 torch-delaunay = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
@@ -1057,6 +1057,7 @@ torchtnt-nightly = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux
 torchtyping = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 torchutil = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 torchvinecopulib = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
+torchvision = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 torchviz = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 torchx = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 torchx-nightly = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
@@ -1082,7 +1083,7 @@ u8darts = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 uhg = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 uitestrunner-syberos = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 ultimate-rvc = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
-
+ultralytics = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 ultralytics-thop = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 unav = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 unbabel-comet = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
@@ -1140,6 +1141,3 @@ yta-general-utils = [{ index = "pytorch-cpu", marker = "platform_system == 'Linu
 zensvi = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 zetascale = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
 zuko = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
-torch = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
-torchvision = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
-ultralytics = [{ index = "pytorch-cpu", marker = "platform_system == 'Linux'" }]
