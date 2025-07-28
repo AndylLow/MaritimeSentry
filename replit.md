@@ -10,7 +10,14 @@ Preferred communication style: Simple, everyday language.
 User rejected Firebase integration - wants simpler approach without external services.
 User requested improved color contrast for better readability (fixed green-on-green and black-on-gray issues).
 
-## Recent Changes (July 23, 2025)
+## Recent Changes (July 28, 2025)
+
+✓ **DEPLOYMENT DEPENDENCY FIX**: Fixed ultralytics package version conflict for deployment
+✓ **Version Constraint Update**: Changed from `>=8.0.0,<9.0.0` to `>=8.0.0` to resolve deployment issues
+✓ **Platform Compatibility**: Removed pytorch-cpu index constraint that was causing version conflicts
+✓ **Deployment Ready**: Application now ready for production deployment without dependency conflicts
+
+## Previous Changes (July 23, 2025)
 
 ✓ **REAL YOLO MODEL ACTIVATED**: Fixed missing ultralytics/torch packages - now using actual YOLOv8 instead of fallback detector
 ✓ **Package Installation Fixed**: Resolved dependency conflicts and installed ultralytics v8.3.169, torch v2.7.1, torchvision v0.22.1
